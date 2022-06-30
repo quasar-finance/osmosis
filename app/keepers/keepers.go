@@ -36,6 +36,9 @@ import (
 	icahost "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host"
 	icahostkeeper "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/keeper"
 	icahosttypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/host/types"
+	"github.com/cosmos/ibc-go/v3/modules/apps/icq"
+	icqkeeper "github.com/cosmos/ibc-go/v3/modules/apps/icq/keeper"
+	icqtypes "github.com/cosmos/ibc-go/v3/modules/apps/icq/types"
 	ibctransferkeeper "github.com/cosmos/ibc-go/v3/modules/apps/transfer/keeper"
 	ibctransfertypes "github.com/cosmos/ibc-go/v3/modules/apps/transfer/types"
 	ibcclient "github.com/cosmos/ibc-go/v3/modules/core/02-client"
@@ -87,6 +90,7 @@ type AppKeepers struct {
 	// make scoped keepers public for test purposes
 	ScopedIBCKeeper      capabilitykeeper.ScopedKeeper
 	ScopedICAHostKeeper  capabilitykeeper.ScopedKeeper
+	ScopedICQKeeper      capabilitykeeper.ScopedKeeper
 	ScopedTransferKeeper capabilitykeeper.ScopedKeeper
 	ScopedWasmKeeper     capabilitykeeper.ScopedKeeper
 
@@ -99,6 +103,7 @@ type AppKeepers struct {
 	SlashingKeeper       *slashingkeeper.Keeper
 	IBCKeeper            *ibckeeper.Keeper
 	ICAHostKeeper        *icahostkeeper.Keeper
+	ICQKeeper            *icqkeeper.Keeper
 	TransferKeeper       *ibctransferkeeper.Keeper
 	Bech32IBCKeeper      *bech32ibckeeper.Keeper
 	Bech32ICS20Keeper    *bech32ics20keeper.Keeper
@@ -223,11 +228,24 @@ func (appKeepers *AppKeepers) InitNormalKeepers(
 		bApp.MsgServiceRouter(),
 	)
 	appKeepers.ICAHostKeeper = &icaHostKeeper
-
 	icaHostIBCModule := icahost.NewIBCModule(*appKeepers.ICAHostKeeper)
+
+	icqKeeper := icqkeeper.NewKeeper(
+		appCodec, appKeepers.keys[icqtypes.StoreKey],
+		appKeepers.GetSubspace(icqtypes.ModuleName),
+		appKeepers.IBCKeeper.ChannelKeeper,
+		appKeepers.IBCKeeper.ChannelKeeper,
+		&appKeepers.IBCKeeper.PortKeeper,
+		appKeepers.ScopedICQKeeper,
+		bApp,
+	)
+	appKeepers.ICQKeeper = &icqKeeper
+	icqIBCModule := icq.NewIBCModule(*appKeepers.ICQKeeper)
+
 	// Create static IBC router, add transfer route, then set and seal it
 	ibcRouter := porttypes.NewRouter()
 	ibcRouter.AddRoute(icahosttypes.SubModuleName, icaHostIBCModule).
+		AddRoute(icqtypes.ModuleName, icqIBCModule).
 		AddRoute(ibctransfertypes.ModuleName, transferIBCModule)
 	// Note: the sealing is done after creating wasmd and wiring that up
 
@@ -362,6 +380,7 @@ func (appKeepers *AppKeepers) InitNormalKeepers(
 	appKeepers.WasmKeeper = &wasmKeeper
 
 	// wire up x/wasm to IBC
+
 	ibcRouter.AddRoute(wasm.ModuleName, wasm.NewIBCHandler(appKeepers.WasmKeeper, appKeepers.IBCKeeper.ChannelKeeper))
 	appKeepers.IBCKeeper.SetRouter(ibcRouter)
 
@@ -410,6 +429,7 @@ func (appKeepers *AppKeepers) InitSpecialKeepers(
 	appKeepers.CapabilityKeeper = capabilitykeeper.NewKeeper(appCodec, appKeepers.keys[capabilitytypes.StoreKey], appKeepers.memKeys[capabilitytypes.MemStoreKey])
 	appKeepers.ScopedIBCKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibchost.ModuleName)
 	appKeepers.ScopedICAHostKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
+	appKeepers.ScopedICQKeeper = appKeepers.CapabilityKeeper.ScopeToModule(icqtypes.ModuleName)
 	appKeepers.ScopedTransferKeeper = appKeepers.CapabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	appKeepers.ScopedWasmKeeper = appKeepers.CapabilityKeeper.ScopeToModule(wasm.ModuleName)
 	appKeepers.CapabilityKeeper.Seal()
@@ -446,6 +466,7 @@ func (appKeepers *AppKeepers) initParamsKeeper(appCodec codec.BinaryCodec, legac
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
 	paramsKeeper.Subspace(ibchost.ModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
+	paramsKeeper.Subspace(icqtypes.ModuleName)
 	paramsKeeper.Subspace(incentivestypes.ModuleName)
 	paramsKeeper.Subspace(poolincentivestypes.ModuleName)
 	paramsKeeper.Subspace(superfluidtypes.ModuleName)
@@ -527,6 +548,7 @@ func KVStoreKeys() []string {
 		paramstypes.StoreKey,
 		ibchost.StoreKey,
 		icahosttypes.StoreKey,
+		icqtypes.StoreKey,
 		upgradetypes.StoreKey,
 		evidencetypes.StoreKey,
 		ibctransfertypes.StoreKey,
