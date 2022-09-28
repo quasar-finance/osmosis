@@ -34,7 +34,7 @@ func (im *IBCModule) OnChanOpenInit(ctx sdk.Context,
 	channelCap *capabilitytypes.Capability,
 	counterparty channeltypes.Counterparty,
 	version string,
-) error {
+) (string, error) {
 	return im.app.OnChanOpenInit(
 		ctx,
 		order,

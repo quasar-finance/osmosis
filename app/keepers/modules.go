@@ -3,6 +3,7 @@ package keepers
 import (
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmclient "github.com/CosmWasm/wasmd/x/wasm/client"
+	"github.com/cosmos/ibc-go/v3/modules/apps/icq"
 	transfer "github.com/cosmos/ibc-go/v3/modules/apps/transfer"
 	ibc "github.com/cosmos/ibc-go/v3/modules/core"
 	ibcclientclient "github.com/cosmos/ibc-go/v3/modules/core/02-client/client"
@@ -86,4 +87,5 @@ var AppModuleBasics = []module.AppModuleBasic{
 	tokenfactory.AppModuleBasic{},
 	wasm.AppModuleBasic{},
 	ica.AppModuleBasic{},
+	icq.AppModuleBasic{},
 }

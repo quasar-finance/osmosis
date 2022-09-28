@@ -297,6 +297,8 @@ replace (
 	github.com/cosmos/cosmos-sdk => github.com/osmosis-labs/cosmos-sdk v0.45.1-0.20220921135931-3c4d30596acc
 	// Use Osmosis fast iavl
 	github.com/cosmos/iavl => github.com/osmosis-labs/iavl v0.17.3-osmo-v7
+
+	github.com/cosmos/ibc-go/v3 => github.com/strangelove-ventures/ibc-go/v3 v3.0.0-20220714101859-f79a4eee19ba
 	// use cosmos-compatible protobufs
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 	// use grpc compatible with cosmos protobufs
