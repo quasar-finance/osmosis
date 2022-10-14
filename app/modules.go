@@ -8,6 +8,8 @@ import (
 
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
 	icatypes "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts/types"
+	icq "github.com/cosmos/ibc-go/v3/modules/apps/icq"
+	icqtypes "github.com/cosmos/ibc-go/v3/modules/apps/icq/types"
 
 	"github.com/cosmos/cosmos-sdk/types/module"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -72,6 +74,7 @@ var moduleAccountPermissions = map[string][]string{
 	authtypes.FeeCollectorName:               nil,
 	distrtypes.ModuleName:                    nil,
 	icatypes.ModuleName:                      nil,
+	icqtypes.ModuleName:                      nil,
 	minttypes.ModuleName:                     {authtypes.Minter, authtypes.Burner},
 	minttypes.DeveloperVestingModuleAcctName: nil,
 	stakingtypes.BondedPoolName:              {authtypes.Burner, authtypes.Staking},
@@ -120,6 +123,7 @@ func appModules(
 		authzmodule.NewAppModule(appCodec, *app.AuthzKeeper, app.AccountKeeper, app.BankKeeper, app.interfaceRegistry),
 		ibc.NewAppModule(app.IBCKeeper),
 		ica.NewAppModule(nil, app.ICAHostKeeper),
+		icq.NewAppModule(*app.ICQKeeper),
 		params.NewAppModule(*app.ParamsKeeper),
 		app.TransferModule,
 		gamm.NewAppModule(appCodec, *app.GAMMKeeper, app.AccountKeeper, app.BankKeeper),
@@ -191,6 +195,7 @@ func OrderInitGenesis(allModuleNames []string) []string {
 		crisistypes.ModuleName,
 		ibchost.ModuleName,
 		icatypes.ModuleName,
+		icqtypes.ModuleName,
 		gammtypes.ModuleName,
 		twaptypes.ModuleName,
 		txfeestypes.ModuleName,

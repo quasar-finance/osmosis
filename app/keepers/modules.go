@@ -26,6 +26,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 	upgradeclient "github.com/cosmos/cosmos-sdk/x/upgrade/client"
 	ica "github.com/cosmos/ibc-go/v3/modules/apps/27-interchain-accounts"
+	"github.com/cosmos/ibc-go/v3/modules/apps/icq"
 
 	_ "github.com/osmosis-labs/osmosis/v12/client/docs/statik"
 	"github.com/osmosis-labs/osmosis/v12/x/epochs"
@@ -86,4 +87,5 @@ var AppModuleBasics = []module.AppModuleBasic{
 	tokenfactory.AppModuleBasic{},
 	wasm.AppModuleBasic{},
 	ica.AppModuleBasic{},
+	icq.AppModuleBasic{},
 }
