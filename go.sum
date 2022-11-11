@@ -966,6 +966,8 @@ github.com/prometheus/procfs v0.8.0 h1:ODq8ZFEaYeCaZOJlZZdJA2AbQR98dSHSM1KW/You5
 github.com/prometheus/procfs v0.8.0/go.mod h1:z7EfXMXOkbkqb9IINtpCn86r/to3BnA0uaxHdg830/4=
 github.com/prometheus/tsdb v0.6.2-0.20190402121629-4f204dcbc150/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
 github.com/prometheus/tsdb v0.7.1/go.mod h1:qhTCs0VvXwvX/y3TZrWD7rabWM+ijKTux40TwIPHuXU=
+github.com/quasar-finance/ibc-go/v3 v3.0.0-20221111165142-7e59c807a6cc h1:J97dEG1no2DPNHxwXh+Nl52ZSs6dXDtVTCiZ4Ah65zY=
+github.com/quasar-finance/ibc-go/v3 v3.0.0-20221111165142-7e59c807a6cc/go.mod h1:VUWLHw0C3USmTQZnTdkuXXdUdLbW8zsK3lV1Ieposog=
 github.com/quasilyte/go-ruleguard v0.3.1-0.20210203134552-1b5a410e1cc8/go.mod h1:KsAh3x0e7Fkpgs+Q9pNLS5XpFSvYCEVl5gP9Pp1xp30=
 github.com/quasilyte/go-ruleguard v0.3.17 h1:cDdoaSbQg11LXPDQqiCK54QmQXsEQQCTIgdcpeULGSI=
 github.com/quasilyte/go-ruleguard v0.3.17/go.mod h1:sST5PvaR7yb/Az5ksX8oc88usJ4EGjmJv7cK7y3jyig=
@@ -1089,8 +1091,6 @@ github.com/stbenjam/no-sprintf-host-port v0.1.1 h1:tYugd/yrm1O0dV+ThCbaKZh195Dfm
 github.com/stbenjam/no-sprintf-host-port v0.1.1/go.mod h1:TLhvtIvONRzdmkFiio4O8LHsN9N74I+PhRquPsxpL0I=
 github.com/steakknife/bloomfilter v0.0.0-20180922174646-6819c0d2a570/go.mod h1:8OR4w3TdeIHIh1g6EMY5p0gVNOovcWC+1vpc7naMuAw=
 github.com/steakknife/hamming v0.0.0-20180906055917-c99c65617cd3/go.mod h1:hpGUWaI9xL8pRQCTXQgocU38Qw1g0Us7n5PxxTwTCYU=
-github.com/strangelove-ventures/ibc-go/v3 v3.0.0-20221014082552-99c8caa484af h1:ncDRb+84QHZ/gcqMtF55tPqRtSmeR4fKuzBQ1TgJG1k=
-github.com/strangelove-ventures/ibc-go/v3 v3.0.0-20221014082552-99c8caa484af/go.mod h1:VUWLHw0C3USmTQZnTdkuXXdUdLbW8zsK3lV1Ieposog=
 github.com/streadway/amqp v0.0.0-20190404075320-75d898a42a94/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271/go.mod h1:AZpEONHx3DKn8O/DFsRAY58/XVQiIPMTMB1SddzLXVw=
 github.com/streadway/handy v0.0.0-20190108123426-d5acb3125c2a/go.mod h1:qNTQ5P5JnDBl6z3cMAg/SywNDC5ABu5ApDIw6lUbRmI=
