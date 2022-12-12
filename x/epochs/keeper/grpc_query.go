@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"github.com/osmosis-labs/osmosis/v7/x/epochs/types"
+	"github.com/osmosis-labs/osmosis/v13/x/epochs/types"
 )
 
 var _ types.QueryServer = Querier{}
@@ -19,6 +19,7 @@ type Querier struct {
 	Keeper
 }
 
+// NewQuerier initializes new querier.
 func NewQuerier(k Keeper) Querier {
 	return Querier{Keeper: k}
 }
@@ -36,6 +37,9 @@ func (q Querier) EpochInfos(c context.Context, _ *types.QueryEpochsInfoRequest) 
 func (q Querier) CurrentEpoch(c context.Context, req *types.QueryCurrentEpochRequest) (*types.QueryCurrentEpochResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	if req.Identifier == "" {
+		return nil, status.Error(codes.InvalidArgument, "identifier is empty")
 	}
 
 	ctx := sdk.UnwrapSDKContext(c)

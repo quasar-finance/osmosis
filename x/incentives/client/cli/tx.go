@@ -2,13 +2,14 @@ package cli
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"time"
 
-	"github.com/osmosis-labs/osmosis/v7/x/incentives/types"
-	lockuptypes "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
 	"github.com/spf13/cobra"
+
+	"github.com/osmosis-labs/osmosis/v13/osmoutils/osmocli"
+	"github.com/osmosis-labs/osmosis/v13/x/incentives/types"
+	lockuptypes "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -18,14 +19,7 @@ import (
 
 // GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
-	cmd := &cobra.Command{
-		Use:                        types.ModuleName,
-		Short:                      fmt.Sprintf("%s transactions subcommands", types.ModuleName),
-		DisableFlagParsing:         true,
-		SuggestionsMinimumDistance: 2,
-		RunE:                       client.ValidateCmd,
-	}
-
+	cmd := osmocli.TxIndexCmd(types.ModuleName)
 	cmd.AddCommand(
 		NewCreateGaugeCmd(),
 		NewAddToGaugeCmd(),
@@ -34,7 +28,7 @@ func GetTxCmd() *cobra.Command {
 	return cmd
 }
 
-// NewCreateGaugeCmd broadcast MsgCreateGauge.
+// NewCreateGaugeCmd broadcasts a CreateGauge message.
 func NewCreateGaugeCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create-gauge [lockup_denom] [reward] [flags]",
@@ -66,7 +60,7 @@ func NewCreateGaugeCmd() *cobra.Command {
 			} else if timeRFC, err := time.Parse(time.RFC3339, timeStr); err == nil { // RFC time
 				startTime = timeRFC
 			} else { // invalid input
-				return errors.New("Invalid start time format")
+				return errors.New("invalid start time format")
 			}
 
 			epochs, err := cmd.Flags().GetUint64(FlagEpochs)
@@ -113,41 +107,9 @@ func NewCreateGaugeCmd() *cobra.Command {
 	return cmd
 }
 
-// NewAddToGaugeCmd broadcast MsgAddToGauge.
 func NewAddToGaugeCmd() *cobra.Command {
-	cmd := &cobra.Command{
+	return osmocli.BuildTxCli[*types.MsgAddToGauge](&osmocli.TxCliDesc{
 		Use:   "add-to-gauge [gauge_id] [rewards] [flags]",
 		Short: "add coins to gauge to distribute more rewards to users",
-		Args:  cobra.ExactArgs(2),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx, err := client.GetClientTxContext(cmd)
-			if err != nil {
-				return err
-			}
-
-			txf := tx.NewFactoryCLI(clientCtx, cmd.Flags()).WithTxConfig(clientCtx.TxConfig).WithAccountRetriever(clientCtx.AccountRetriever)
-
-			gaugeId, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-
-			rewards, err := sdk.ParseCoinsNormalized(args[1])
-			if err != nil {
-				return err
-			}
-
-			msg := types.NewMsgAddToGauge(
-				clientCtx.GetFromAddress(),
-				gaugeId,
-				rewards,
-			)
-
-			return tx.GenerateOrBroadcastTxWithFactory(clientCtx, txf, msg)
-		},
-	}
-
-	cmd.Flags().AddFlagSet(FlagSetCreateGauge())
-	flags.AddTxFlagsToCmd(cmd)
-	return cmd
+	})
 }

@@ -6,10 +6,11 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/pool-models/balancer"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/pool-models/internal/cfmm_common"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/pool-models/stableswap"
-	gammtypes "github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/balancer"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/internal/cfmm_common"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/stableswap"
+	gammtypes "github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	swaproutertypes "github.com/osmosis-labs/osmosis/v13/x/swaprouter/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -45,8 +46,9 @@ func TestCalcExitPool(t *testing.T) {
 		1,
 		stableswap.PoolParams{ExitFee: sdk.ZeroDec()},
 		twoStablePoolAssets,
+		[]uint64{1, 1},
 		"",
-		time.Now(),
+		"",
 	)
 	require.NoError(t, err)
 
@@ -63,8 +65,9 @@ func TestCalcExitPool(t *testing.T) {
 		1,
 		stableswap.PoolParams{ExitFee: sdk.MustNewDecFromStr("0.0001")},
 		twoStablePoolAssets,
+		[]uint64{1, 1},
 		"",
-		time.Now(),
+		"",
 	)
 	require.NoError(t, err)
 
@@ -79,7 +82,7 @@ func TestCalcExitPool(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		pool          gammtypes.PoolI
+		pool          gammtypes.CFMMPoolI
 		exitingShares sdk.Int
 		expError      bool
 	}{
@@ -147,14 +150,14 @@ func TestMaximalExactRatioJoin(t *testing.T) {
 
 	tests := []struct {
 		name        string
-		pool        func() gammtypes.PoolI
+		pool        func() swaproutertypes.PoolI
 		tokensIn    sdk.Coins
 		expNumShare sdk.Int
 		expRemCoin  sdk.Coins
 	}{
 		{
 			name: "two asset pool, same tokenIn ratio",
-			pool: func() gammtypes.PoolI {
+			pool: func() swaproutertypes.PoolI {
 				balancerPool, err := balancer.NewBalancerPool(
 					1,
 					balancer.PoolParams{SwapFee: sdk.ZeroDec(), ExitFee: sdk.ZeroDec()},
@@ -171,7 +174,7 @@ func TestMaximalExactRatioJoin(t *testing.T) {
 		},
 		{
 			name: "two asset pool, different tokenIn ratio with pool",
-			pool: func() gammtypes.PoolI {
+			pool: func() swaproutertypes.PoolI {
 				balancerPool, err := balancer.NewBalancerPool(
 					1,
 					balancer.PoolParams{SwapFee: sdk.ZeroDec(), ExitFee: sdk.ZeroDec()},

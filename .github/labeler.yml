@@ -9,10 +9,19 @@
   - app/upgrades/**/*
   # Also match any module.go update
   - x/**/module.go
+"C:simulator":
+  # Match all of simulation & tests/simulator folder
+  - simulation/**/*
+  - simulation/**/**/*
+  - tests/simulator/**
+  # Match any module update
+  - x/**/simulation/*.go
 "C:wasm":
   - app/wasm/**/*
 "C:x/claim":
   - x/claim/**/*
+"C:x/concentrated-liquidity":
+  - x/concentrated-liquidity/**/*
 "C:x/epochs":
   - x/epochs/**/*
 "C:x/gamm":
@@ -27,8 +36,15 @@
   - x/pool-incentives/**/*
 "C:x/superfluid":
   - x/superfluid/**/*
+"C:x/swaprouter":
+  - x/swaprouter/**/*
 "C:x/txfees":
   - x/txfees/**/*
+"C:x/tokenfactory":
+  - x/tokenfactory/**/*
+"C:x/twap":
+  - x/twap/*
+  - x/twap/**/*
 "T:build":
   - Makefile
   - Dockerfile
@@ -40,9 +56,8 @@
 "C:CLI":
   - client/**/*
   - x/*/client/**/*
-# Add "C:docs" label to documented related files and directories. 
+# Add "C:docs" label to documented related files and directories.
 "C:docs":
-  - CHANGELOG.md
   - bug.md
   - issue.md
   - proto-docs.md
@@ -50,4 +65,3 @@
   - x/**/*.md
   - x/**/*/*.md
   - tests/**/*.md
-  

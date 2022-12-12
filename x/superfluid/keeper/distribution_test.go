@@ -1,8 +1,8 @@
 package keeper_test
 
 import (
-	lockuptypes "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
-	"github.com/osmosis-labs/osmosis/v7/x/superfluid/keeper"
+	lockuptypes "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
+	"github.com/osmosis-labs/osmosis/v13/x/superfluid/keeper"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
@@ -47,8 +47,19 @@ func (suite *KeeperTestSuite) TestMoveSuperfluidDelegationRewardToGauges() {
 			[]int64{0},
 			[]gaugeChecker{{0, 0, 0, true}},
 		},
+		// In this case, allocate reward to validators with different stat.
+		// There is no difference between Bonded, Unbonding, Unbonded
 		{
-			"add unbonded validator case",
+			"add unbonded, unbonding validator case",
+			[]stakingtypes.BondStatus{stakingtypes.Bonded, stakingtypes.Unbonded, stakingtypes.Unbonding},
+			3,
+			[]superfluidDelegation{{0, 0, 0, 1000000}, {1, 1, 0, 1000000}, {2, 2, 0, 1000000}},
+			[]int64{0, 1, 2},
+			[]gaugeChecker{{0, 0, 0, true}, {1, 1, 0, true}, {2, 2, 0, true}},
+		},
+		// Do not allocate rewards to the Unbonded validator. Therefore gauges are not distributed
+		{
+			"Unallocate to Unbonded validator",
 			[]stakingtypes.BondStatus{stakingtypes.Bonded, stakingtypes.Unbonded},
 			2,
 			[]superfluidDelegation{{0, 0, 0, 1000000}, {1, 1, 0, 1000000}},
@@ -63,16 +74,13 @@ func (suite *KeeperTestSuite) TestMoveSuperfluidDelegationRewardToGauges() {
 		suite.Run(tc.name, func() {
 			suite.SetupTest()
 
-			// Generate delegator addresses
-			delAddrs := CreateRandomAccounts(tc.delegatorNumber)
-
 			// setup validators
 			valAddrs := suite.SetupValidators(tc.validatorStats)
 
 			denoms, _ := suite.SetupGammPoolsAndSuperfluidAssets([]sdk.Dec{sdk.NewDec(20), sdk.NewDec(20)})
 
 			// setup superfluid delegations
-			intermediaryAccs, _ := suite.SetupSuperfluidDelegations(delAddrs, valAddrs, tc.superDelegations, denoms)
+			_, intermediaryAccs, _ := suite.setupSuperfluidDelegations(valAddrs, tc.superDelegations, denoms)
 			unbondingDuration := suite.App.StakingKeeper.GetParams(suite.Ctx).UnbondingTime
 
 			// allocate rewards to first validator

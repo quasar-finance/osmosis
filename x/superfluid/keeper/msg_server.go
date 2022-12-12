@@ -3,17 +3,15 @@ package keeper
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	v8constants "github.com/osmosis-labs/osmosis/v7/app/upgrades/v8/constants"
-	gammtypes "github.com/osmosis-labs/osmosis/v7/x/gamm/types"
-	lockuptypes "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
+	gammtypes "github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	lockuptypes "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/superfluid/types"
+	"github.com/osmosis-labs/osmosis/v13/x/superfluid/keeper/internal/events"
+	"github.com/osmosis-labs/osmosis/v13/x/superfluid/types"
 )
 
 type msgServer struct {
@@ -29,33 +27,46 @@ func NewMsgServerImpl(keeper *Keeper) types.MsgServer {
 
 var _ types.MsgServer = msgServer{}
 
+// SuperfluidDelegate creates a delegation for the given lock ID and the validator to delegate to.
+// This requires the lock to have locked tokens that have been already registered as a superfluid asset via governance.
+// The pre-requisites for a lock to be able to be eligible for superfluid delegation are
+// - assets in the lock should be a superfluid registered asset
+// - lock should only have a single asset
+// - lock should not be unlocking
+// - lock should not have a different superfluid staking position
+// - lock duration should be greater or equal to the staking.Unbonding time
+// Note that the amount of delegation is not equal to the equivalent amount of osmo within the lock.
+// Instead, we use the osmo equivalent multiplier stored in the latest epoch, calculate how much
+// osmo equivalent is in lock, and use the risk adjusted osmo value. The minimum risk ratio works as a parameter
+// to better incentivize and balance between superfluid staking and vanilla staking.
+// Delegation does not happen directly from msg.Sender, but instead delegation is done via intermediary account.
 func (server msgServer) SuperfluidDelegate(goCtx context.Context, msg *types.MsgSuperfluidDelegate) (*types.MsgSuperfluidDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := server.keeper.SuperfluidDelegate(ctx, msg.Sender, msg.LockId, msg.ValAddr)
-	if err != nil {
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.TypeEvtSuperfluidDelegate,
-			sdk.NewAttribute(types.AttributeLockId, fmt.Sprintf("%d", msg.LockId)),
-			sdk.NewAttribute(types.AttributeValidator, msg.ValAddr),
-		))
+	if err == nil {
+		events.EmitSuperfluidDelegateEvent(ctx, msg.LockId, msg.ValAddr)
 	}
 	return &types.MsgSuperfluidDelegateResponse{}, err
 }
 
+// SuperfluidUndelegate undelegates currently superfluid delegated position.
+// Old synthetic lock is deleted and a new synthetic lock is created to indicate the unbonding position.
+// The actual staking position is instantly undelegated and the undelegated tokens are instantly sent from
+// the intermediary account to the module account.
+// Note that SuperfluidUndelegation does not start unbonding of the underlying lock iteslf.
 func (server msgServer) SuperfluidUndelegate(goCtx context.Context, msg *types.MsgSuperfluidUndelegate) (*types.MsgSuperfluidUndelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := server.keeper.SuperfluidUndelegate(ctx, msg.Sender, msg.LockId)
-	if err != nil {
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.TypeEvtSuperfluidUndelegate,
-			sdk.NewAttribute(types.AttributeLockId, fmt.Sprintf("%d", msg.LockId)),
-		))
+	if err == nil {
+		events.EmitSuperfluidUndelegateEvent(ctx, msg.LockId)
 	}
 	return &types.MsgSuperfluidUndelegateResponse{}, err
 }
 
+// SuperfluidRedelegate is a method to redelegate superfluid staked asset into a different validator.
+// Currently this feature is not supported.
 // func (server msgServer) SuperfluidRedelegate(goCtx context.Context, msg *types.MsgSuperfluidRedelegate) (*types.MsgSuperfluidRedelegateResponse, error) {
 // 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -63,21 +74,24 @@ func (server msgServer) SuperfluidUndelegate(goCtx context.Context, msg *types.M
 // 	return &types.MsgSuperfluidRedelegateResponse{}, err
 // }
 
+// SuperfluidUnbondLock starts unbonding for currently superfluid undelegating lock.
+// This method would return an error when the underlying lock is not in an superfluid undelegating state,
+// or if the lock is not used in superfluid staking.
 func (server msgServer) SuperfluidUnbondLock(goCtx context.Context, msg *types.MsgSuperfluidUnbondLock) (
 	*types.MsgSuperfluidUnbondLockResponse, error,
 ) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := server.keeper.SuperfluidUnbondLock(ctx, msg.LockId, msg.Sender)
-	if err != nil {
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.TypeEvtSuperfluidUnbondLock,
-			sdk.NewAttribute(types.AttributeLockId, fmt.Sprintf("%d", msg.LockId)),
-		))
+	if err == nil {
+		events.EmitSuperfluidUnbondLockEvent(ctx, msg.LockId)
 	}
 	return &types.MsgSuperfluidUnbondLockResponse{}, err
 }
 
+// LockAndSuperfluidDelegate locks and superfluid delegates given tokens in a single message.
+// This method consists of multiple messages, `LockTokens` from the lockup module msg server, and
+// `SuperfluidDelegate` from the superfluid module msg server.
 func (server msgServer) LockAndSuperfluidDelegate(goCtx context.Context, msg *types.MsgLockAndSuperfluidDelegate) (*types.MsgLockAndSuperfluidDelegateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -107,11 +121,12 @@ func (server msgServer) LockAndSuperfluidDelegate(goCtx context.Context, msg *ty
 func (server msgServer) UnPoolWhitelistedPool(goCtx context.Context, msg *types.MsgUnPoolWhitelistedPool) (*types.MsgUnPoolWhitelistedPoolResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	if ctx.BlockHeight() < v8constants.UpgradeHeight {
-		return nil, errors.New("message not activated")
+	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	if err != nil {
+		return nil, err
 	}
 
-	sender, err := sdk.AccAddressFromBech32(msg.Sender)
+	err = server.keeper.checkUnpoolWhitelisted(ctx, msg.PoolId)
 	if err != nil {
 		return nil, err
 	}
@@ -131,14 +146,7 @@ func (server msgServer) UnPoolWhitelistedPool(goCtx context.Context, msg *types.
 	}
 
 	allExitedLockIDsSerialized, _ := json.Marshal(allExitedLockIDs)
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.TypeEvtUnpoolId,
-			sdk.NewAttribute(sdk.AttributeKeySender, msg.Sender),
-			sdk.NewAttribute(types.AttributeDenom, lpShareDenom),
-			sdk.NewAttribute(types.AttributeNewLockIds, string(allExitedLockIDsSerialized)),
-		),
-	})
+	events.EmitUnpoolIdEvent(ctx, msg.Sender, lpShareDenom, allExitedLockIDsSerialized)
 
 	return &types.MsgUnPoolWhitelistedPoolResponse{ExitedLockIds: allExitedLockIDs}, nil
 }

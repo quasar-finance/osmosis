@@ -2,7 +2,7 @@ package wasmbinding
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/osmosis-labs/osmosis/v7/app"
+	"github.com/osmosis-labs/osmosis/v13/app"
 )
 
 func TestNoStorageWithoutProposal(t *testing.T) {
@@ -27,15 +27,15 @@ func TestNoStorageWithoutProposal(t *testing.T) {
 	_, _, creator := keyPubAddr()
 
 	// upload reflect code
-	wasmCode, err := ioutil.ReadFile("../testdata/hackatom.wasm")
+	wasmCode, err := os.ReadFile("../testdata/hackatom.wasm")
 	require.NoError(t, err)
-	_, err = contractKeeper.Create(ctx, creator, wasmCode, nil)
+	_, _, err = contractKeeper.Create(ctx, creator, wasmCode, nil)
 	require.Error(t, err)
 }
 
 func storeCodeViaProposal(t *testing.T, ctx sdk.Context, osmosis *app.OsmosisApp, addr sdk.AccAddress) {
 	govKeeper := osmosis.GovKeeper
-	wasmCode, err := ioutil.ReadFile("../testdata/hackatom.wasm")
+	wasmCode, err := os.ReadFile("../testdata/hackatom.wasm")
 	require.NoError(t, err)
 
 	src := types.StoreCodeProposalFixture(func(p *types.StoreCodeProposal) {
@@ -44,7 +44,7 @@ func storeCodeViaProposal(t *testing.T, ctx sdk.Context, osmosis *app.OsmosisApp
 	})
 
 	// when stored
-	storedProposal, err := govKeeper.SubmitProposal(ctx, src)
+	storedProposal, err := govKeeper.SubmitProposal(ctx, src, false)
 	require.NoError(t, err)
 
 	// and proposal execute
@@ -68,7 +68,7 @@ func TestStoreCodeProposal(t *testing.T) {
 
 	storedCode, err := wasmKeeper.GetByteCode(ctx, 1)
 	require.NoError(t, err)
-	wasmCode, err := ioutil.ReadFile("../testdata/hackatom.wasm")
+	wasmCode, err := os.ReadFile("../testdata/hackatom.wasm")
 	require.NoError(t, err)
 	assert.Equal(t, wasmCode, storedCode)
 }

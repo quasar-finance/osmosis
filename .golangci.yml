@@ -13,7 +13,6 @@ linters:
     #    - bodyclose <- needs go 1.18 support
     # - contextcheck <- needs go 1.18 support
     #    - cyclop
-    #    - deadcode <- re-enable in another pr
     - depguard
     #    - dogsled <- disabled because we would like to participate in the iditerod
     # - dupl <- really just catches cli stub text
@@ -45,9 +44,9 @@ linters:
     - gomodguard
     - goprintffuncname
 #    - gosec <- triggers too much for this round and should be re-enabled later
-#    - gosimple <- later
+    - gosimple # specializes in simplifying code, subset of staticcheck binary.
     - govet
-    #   - ifshort <- seems to be of questionable value
+    #   - ifshort <- questionable value, unclear if globally helping readability.
     - importas
     - ineffassign
     #    - ireturn <- disabled because we want to return interfaces
@@ -68,9 +67,8 @@ linters:
 #    - revive <- temporarily disabled while jacob figures out how to make poolId not trigger it.
     # - rowserrcheck <- needs go 1.18 support
     # - sqlclosecheck <- needs go 1.18 support
-#    - staticcheck <- later
-#    - structcheck <- later
-#    - stylecheck <- enable later, atriggers on underscores in variable names and on poolId
+    - staticcheck # set of rules from staticcheck, subset of staticcheck binary.
+    - stylecheck # replacement of golint, subset of staticcheck binary.
     #    - tagliatelle <- disabled for defying cosmos idiom
     - tenv
     - testpackage
@@ -79,8 +77,7 @@ linters:
     - typecheck
     - unconvert
 #    - unparam <- looks for unused parameters (enable later)
-#    - unused <- looks for unused variables (enable later)
-#    - varcheck <- later
+    - unused # looks for unused variables, subset of staticcheck binary.
     #    - varnamelen <- disabled because defies idiom
     #    - wastedassign
     - whitespace
@@ -95,5 +92,24 @@ issues:
     - path: client/docs
       linters:
         - all
+    - path: x/gamm/pool-models/stableswap
+      linters:
+        # Stableswap is in development.
+        # We should re-enable deadcode and unused linting
+        # across its files, once stableswap is fully complete.
+        - unused
+        - deadcode
+    - linters:
+      - staticcheck
+      text: "SA1024: cutset contains duplicate characters" # proved to not provide much value, only false positives.
+    - linters:
+      - staticcheck
+      text: "SA9004: only the first constant in this group has an explicit type" # explicitly recommended in go syntax
+    - linters:
+      - stylecheck
+      text: "ST1003:" # requires identifiers with "id" to be "ID".
+    - linters:
+      - stylecheck
+      text: "ST1005:" # punctuation in error messages
   max-issues-per-linter: 10000
   max-same-issues: 10000

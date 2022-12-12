@@ -5,33 +5,54 @@ import (
 
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/osmosis-labs/osmosis/v7/x/lockup/types"
+	"github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
 )
 
 // Keeper provides a way to manage module storage.
 type Keeper struct {
-	cdc      codec.Codec
 	storeKey sdk.StoreKey
 
 	hooks types.LockupHooks
 
+	paramSpace paramtypes.Subspace
+
 	ak types.AccountKeeper
 	bk types.BankKeeper
-	dk types.DistrKeeper
+	ck types.CommunityPoolKeeper
 }
 
 // NewKeeper returns an instance of Keeper.
-func NewKeeper(cdc codec.Codec, storeKey sdk.StoreKey, ak types.AccountKeeper, bk types.BankKeeper, dk types.DistrKeeper) *Keeper {
-	return &Keeper{
-		cdc:      cdc,
-		storeKey: storeKey,
-		ak:       ak,
-		bk:       bk,
-		dk:       dk,
+func NewKeeper(storeKey sdk.StoreKey, ak types.AccountKeeper, bk types.BankKeeper, ck types.CommunityPoolKeeper, paramSpace paramtypes.Subspace) *Keeper {
+	// set KeyTable if it has not already been set
+	if !paramSpace.HasKeyTable() {
+		paramSpace = paramSpace.WithKeyTable(types.ParamKeyTable())
 	}
+
+	return &Keeper{
+		storeKey:   storeKey,
+		paramSpace: paramSpace,
+		ak:         ak,
+		bk:         bk,
+		ck:         ck,
+	}
+}
+
+// GetParams returns the total set of lockup parameters.
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
+	k.paramSpace.GetParamSet(ctx, &params)
+	return params
+}
+
+// SetParams sets the total set of lockup parameters.
+func (k Keeper) SetParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
+}
+
+func (k Keeper) GetForceUnlockAllowedAddresses(ctx sdk.Context) (forceUnlockAllowedAddresses []string) {
+	return k.GetParams(ctx).ForceUnlockAllowedAddresses
 }
 
 // Logger returns a logger instance.

@@ -5,31 +5,59 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/osmomath"
+	"github.com/osmosis-labs/osmosis/v13/osmoutils"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	swaproutertypes "github.com/osmosis-labs/osmosis/v13/x/swaprouter/types"
 )
 
 // CalculateSpotPrice returns the spot price of the quote asset in terms of the base asset,
 // using the specified pool.
-// E.g. if pool 1 traded 2 atom for 3 osmo, the quote asset was atom, and the base asset was osmo,
+// E.g. if pool 1 trades 2 atom for 3 osmo, the quote asset was atom, and the base asset was osmo,
 // this would return 1.5. (Meaning that 1 atom costs 1.5 osmo)
+//
+// This function is guaranteed to not panic, but may return an error if:
+// * An internal error within the pool occurs for calculating the spot price
+// * The returned spot price is greater than max spot price
 func (k Keeper) CalculateSpotPrice(
 	ctx sdk.Context,
 	poolID uint64,
 	baseAssetDenom string,
 	quoteAssetDenom string,
-) (sdk.Dec, error) {
+) (spotPrice sdk.Dec, err error) {
 	pool, err := k.GetPoolAndPoke(ctx, poolID)
 	if err != nil {
 		return sdk.Dec{}, err
 	}
 
-	return pool.SpotPrice(ctx, baseAssetDenom, quoteAssetDenom)
+	// defer to catch panics, in case something internal overflows.
+	defer func() {
+		if r := recover(); r != nil {
+			spotPrice = sdk.Dec{}
+			err = types.ErrSpotPriceInternal
+		}
+	}()
+
+	spotPrice, err = pool.SpotPrice(ctx, baseAssetDenom, quoteAssetDenom)
+	if err != nil {
+		return sdk.Dec{}, err
+	}
+
+	// if spotPrice greater than max spot price, return an error
+	if spotPrice.GT(types.MaxSpotPrice) {
+		return types.MaxSpotPrice, types.ErrSpotPriceOverflow
+	} else if !spotPrice.IsPositive() {
+		return sdk.Dec{}, types.ErrSpotPriceInternal
+	}
+
+	// we want to round this to `SpotPriceSigFigs` of precision
+	spotPrice = osmomath.SigFigRound(spotPrice, types.SpotPriceSigFigs)
+	return spotPrice, err
 }
 
-func validateCreatePoolMsg(ctx sdk.Context, msg types.CreatePoolMsg) error {
+func validateCreatePoolMsg(ctx sdk.Context, msg swaproutertypes.CreatePoolMsg) error {
 	err := msg.Validate(ctx)
 	if err != nil {
 		return err
@@ -37,10 +65,10 @@ func validateCreatePoolMsg(ctx sdk.Context, msg types.CreatePoolMsg) error {
 
 	initialPoolLiquidity := msg.InitialLiquidity()
 	numAssets := initialPoolLiquidity.Len()
-	if numAssets < types.MinPoolAssets {
+	if numAssets < swaproutertypes.MinPoolAssets {
 		return types.ErrTooFewPoolAssets
 	}
-	if numAssets > types.MaxPoolAssets {
+	if numAssets > swaproutertypes.MaxPoolAssets {
 		return sdkerrors.Wrapf(
 			types.ErrTooManyPoolAssets,
 			"pool has too many PoolAssets (%d)", numAssets,
@@ -53,7 +81,7 @@ func (k Keeper) validateCreatedPool(
 	ctx sdk.Context,
 	initialPoolLiquidity sdk.Coins,
 	poolId uint64,
-	pool types.PoolI,
+	pool swaproutertypes.PoolI,
 ) error {
 	if pool.GetId() != poolId {
 		return sdkerrors.Wrapf(types.ErrInvalidPool,
@@ -74,10 +102,6 @@ func (k Keeper) validateCreatedPool(
 		return sdkerrors.Wrapf(types.ErrInvalidPool,
 			"Pool was attempted to be created with incorrect number of initial shares.")
 	}
-	acc := k.accountKeeper.GetAccount(ctx, pool.GetAddress())
-	if acc != nil {
-		return sdkerrors.Wrapf(types.ErrPoolAlreadyExist, "pool %d already exist", poolId)
-	}
 	return nil
 }
 
@@ -90,7 +114,7 @@ func (k Keeper) validateCreatedPool(
 // and sent to the pool creator. The shares are created using a denomination in
 // the form of gamm/pool/{poolID}. In addition, the x/bank metadata is updated
 // to reflect the newly created GAMM share denomination.
-func (k Keeper) CreatePool(ctx sdk.Context, msg types.CreatePoolMsg) (uint64, error) {
+func (k Keeper) CreatePool(ctx sdk.Context, msg swaproutertypes.CreatePoolMsg) (uint64, error) {
 	err := validateCreatePoolMsg(ctx, msg)
 	if err != nil {
 		return 0, err
@@ -101,11 +125,11 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg types.CreatePoolMsg) (uint64, er
 
 	// send pool creation fee to community pool
 	params := k.GetParams(ctx)
-	if err := k.distrKeeper.FundCommunityPool(ctx, params.PoolCreationFee, sender); err != nil {
+	if err := k.communityPoolKeeper.FundCommunityPool(ctx, params.PoolCreationFee, sender); err != nil {
 		return 0, err
 	}
 
-	poolId := k.GetNextPoolNumberAndIncrement(ctx)
+	poolId := k.getNextPoolIdAndIncrement(ctx)
 	pool, err := msg.CreatePool(ctx, poolId)
 	if err != nil {
 		return 0, err
@@ -116,14 +140,9 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg types.CreatePoolMsg) (uint64, er
 	}
 
 	// create and save the pool's module account to the account keeper
-	acc := k.accountKeeper.NewAccount(
-		ctx,
-		authtypes.NewModuleAccount(
-			authtypes.NewBaseAccountWithAddress(pool.GetAddress()),
-			pool.GetAddress().String(),
-		),
-	)
-	k.accountKeeper.SetAccount(ctx, acc)
+	if err := osmoutils.CreateModuleAccount(ctx, k.accountKeeper, pool.GetAddress()); err != nil {
+		return 0, fmt.Errorf("creating pool module account for id %d: %w", poolId, err)
+	}
 
 	// send initial liquidity to the pool
 	err = k.bankKeeper.SendCoins(ctx, sender, pool.GetAddress(), initialPoolLiquidity)
@@ -160,7 +179,7 @@ func (k Keeper) CreatePool(ctx sdk.Context, msg types.CreatePoolMsg) (uint64, er
 		Display: poolShareDisplayDenom,
 	})
 
-	if err := k.SetPool(ctx, pool); err != nil {
+	if err := k.setPool(ctx, pool); err != nil {
 		return 0, err
 	}
 
@@ -183,32 +202,43 @@ func (k Keeper) JoinPoolNoSwap(
 	poolId uint64,
 	shareOutAmount sdk.Int,
 	tokenInMaxs sdk.Coins,
-) (err error) {
+) (tokenIn sdk.Coins, sharesOut sdk.Int, err error) {
+	// defer to catch panics, in case something internal overflows.
+	defer func() {
+		if r := recover(); r != nil {
+			tokenIn = sdk.Coins{}
+			sharesOut = sdk.Int{}
+			err = fmt.Errorf("function JoinPoolNoSwap failed due to internal reason: %v", r)
+		}
+	}()
 	// all pools handled within this method are pointer references, `JoinPool` directly updates the pools
 	pool, err := k.GetPoolAndPoke(ctx, poolId)
 	if err != nil {
-		return err
+		return nil, sdk.ZeroInt(), err
 	}
 
 	// we do an abstract calculation on the lp liquidity coins needed to have
 	// the designated amount of given shares of the pool without performing swap
 	neededLpLiquidity, err := getMaximalNoSwapLPAmount(ctx, pool, shareOutAmount)
 	if err != nil {
-		return err
+		return nil, sdk.ZeroInt(), err
 	}
 
 	// check that needed lp liquidity does not exceed the given `tokenInMaxs` parameter. Return error if so.
 	// if tokenInMaxs == 0, don't do this check.
 	if tokenInMaxs.Len() != 0 {
 		if !(neededLpLiquidity.DenomsSubsetOf(tokenInMaxs) && tokenInMaxs.IsAllGTE(neededLpLiquidity)) {
-			return sdkerrors.Wrapf(types.ErrLimitMaxAmount, "TokenInMaxs is less than the needed LP liquidity to this JoinPoolNoSwap,"+
+			return nil, sdk.ZeroInt(), sdkerrors.Wrapf(types.ErrLimitMaxAmount, "TokenInMaxs is less than the needed LP liquidity to this JoinPoolNoSwap,"+
 				" upperbound: %v, needed %v", tokenInMaxs, neededLpLiquidity)
+		} else if !(tokenInMaxs.DenomsSubsetOf(neededLpLiquidity)) {
+			return nil, sdk.ZeroInt(), sdkerrors.Wrapf(types.ErrDenomNotFoundInPool, "TokenInMaxs includes tokens that are not part of the target pool,"+
+				" input tokens: %v, pool tokens %v", tokenInMaxs, neededLpLiquidity)
 		}
 	}
 
-	sharesOut, err := pool.JoinPool(ctx, neededLpLiquidity, pool.GetSwapFee(ctx))
+	sharesOut, err = pool.JoinPoolNoSwap(ctx, neededLpLiquidity, pool.GetSwapFee(ctx))
 	if err != nil {
-		return err
+		return nil, sdk.ZeroInt(), err
 	}
 	// sanity check, don't return error as not worth halting the LP. We know its not too much.
 	if sharesOut.LT(shareOutAmount) {
@@ -217,21 +247,22 @@ func (k Keeper) JoinPoolNoSwap(
 	}
 
 	err = k.applyJoinPoolStateChange(ctx, pool, sender, sharesOut, neededLpLiquidity)
-	return err
+	return neededLpLiquidity, sharesOut, err
 }
 
-// getMaximalNoSwapLPAmount returns the coins(lp liquidity) needed to get the specified amount of share of the pool.
+// getMaximalNoSwapLPAmount returns the coins(lp liquidity) needed to get the specified amount of shares in the pool.
 // Steps to getting the needed lp liquidity coins needed for the share of the pools are
-// 		1. calculate how much percent of the pool does given share account for(# of input shares / # of current total shares)
-// 		2. since we know how much % of the pool we want, iterate through all pool liquidity to calculate how much coins we need for
-// 	  	   each pool asset.
-func getMaximalNoSwapLPAmount(ctx sdk.Context, pool types.PoolI, shareOutAmount sdk.Int) (neededLpLiquidity sdk.Coins, err error) {
+// 1. calculate how much percent of the pool does given share account for(# of input shares / # of current total shares)
+// 2. since we know how much % of the pool we want, iterate through all pool liquidity to calculate how much coins we need for
+// each pool asset.
+func getMaximalNoSwapLPAmount(ctx sdk.Context, pool types.CFMMPoolI, shareOutAmount sdk.Int) (neededLpLiquidity sdk.Coins, err error) {
 	totalSharesAmount := pool.GetTotalShares()
 	// shareRatio is the desired number of shares, divided by the total number of
 	// shares currently in the pool. It is intended to be used in scenarios where you want
 	shareRatio := shareOutAmount.ToDec().QuoInt(totalSharesAmount)
 	if shareRatio.LTE(sdk.ZeroDec()) {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidMathApprox, "share ratio is zero or negative")
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidMathApprox, "Too few shares out wanted. "+
+			"(debug: getMaximalNoSwapLPAmount share ratio is zero or negative)")
 	}
 
 	poolLiquidity := pool.GetTotalPoolLiquidity(ctx)
@@ -260,13 +291,21 @@ func (k Keeper) JoinSwapExactAmountIn(
 	poolId uint64,
 	tokensIn sdk.Coins,
 	shareOutMinAmount sdk.Int,
-) (sdk.Int, error) {
+) (sharesOut sdk.Int, err error) {
+	// defer to catch panics, in case something internal overflows.
+	defer func() {
+		if r := recover(); r != nil {
+			sharesOut = sdk.Int{}
+			err = fmt.Errorf("function JoinSwapExactAmountIn failed due to internal reason: %v", r)
+		}
+	}()
+
 	pool, err := k.getPoolForSwap(ctx, poolId)
 	if err != nil {
 		return sdk.Int{}, err
 	}
 
-	sharesOut, err := pool.JoinPool(ctx, tokensIn, pool.GetSwapFee(ctx))
+	sharesOut, err = pool.JoinPool(ctx, tokensIn, pool.GetSwapFee(ctx))
 	switch {
 	case err != nil:
 		return sdk.ZeroInt(), err
@@ -297,6 +336,14 @@ func (k Keeper) JoinSwapShareAmountOut(
 	shareOutAmount sdk.Int,
 	tokenInMaxAmount sdk.Int,
 ) (tokenInAmount sdk.Int, err error) {
+	// defer to catch panics, in case something internal overflows.
+	defer func() {
+		if r := recover(); r != nil {
+			tokenInAmount = sdk.Int{}
+			err = fmt.Errorf("function JoinSwapShareAmountOut failed due to internal reason: %v", r)
+		}
+	}()
+
 	pool, err := k.getPoolForSwap(ctx, poolId)
 	if err != nil {
 		return sdk.Int{}, err
@@ -313,10 +360,11 @@ func (k Keeper) JoinSwapShareAmountOut(
 	}
 
 	if tokenInAmount.GT(tokenInMaxAmount) {
-		return sdk.Int{}, sdkerrors.Wrapf(types.ErrLimitMaxAmount, "%d resulted tokens is larger than the max amount of %d", tokenInAmount.Int64(), tokenInMaxAmount.Int64())
+		return sdk.Int{}, sdkerrors.Wrapf(types.ErrLimitMaxAmount, "%s resulted tokens is larger than the max amount of %s", tokenInAmount, tokenInMaxAmount)
 	}
 
 	tokenIn := sdk.NewCoins(sdk.NewCoin(tokenInDenom, tokenInAmount))
+	// Not using generic JoinPool because we want to guarantee exact shares out
 	extendedPool.IncreaseLiquidity(shareOutAmount, tokenIn)
 
 	err = k.applyJoinPoolStateChange(ctx, pool, sender, shareOutAmount, tokenIn)
@@ -339,8 +387,10 @@ func (k Keeper) ExitPool(
 	}
 
 	totalSharesAmount := pool.GetTotalShares()
-	if shareInAmount.GTE(totalSharesAmount) || shareInAmount.LTE(sdk.ZeroInt()) {
-		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidMathApprox, "share ratio is zero or negative")
+	if shareInAmount.GTE(totalSharesAmount) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidMathApprox, "Trying to exit >= the number of shares contained in the pool.")
+	} else if shareInAmount.LTE(sdk.ZeroInt()) {
+		return sdk.Coins{}, sdkerrors.Wrapf(types.ErrInvalidMathApprox, "Trying to exit a negative amount of shares")
 	}
 	exitFee := pool.GetExitFee(ctx)
 	exitCoins, err = pool.ExitPool(ctx, shareInAmount, exitFee)

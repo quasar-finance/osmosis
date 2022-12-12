@@ -14,7 +14,7 @@ import (
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
 	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
-	_ "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
+	_ "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -74,6 +74,7 @@ func (m *ModuleToDistributeCoinsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_ModuleToDistributeCoinsRequest proto.InternalMessageInfo
 
 type ModuleToDistributeCoinsResponse struct {
+	// Coins that have yet to be distributed
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
 }
 
@@ -117,87 +118,8 @@ func (m *ModuleToDistributeCoinsResponse) GetCoins() github_com_cosmos_cosmos_sd
 	return nil
 }
 
-type ModuleDistributedCoinsRequest struct {
-}
-
-func (m *ModuleDistributedCoinsRequest) Reset()         { *m = ModuleDistributedCoinsRequest{} }
-func (m *ModuleDistributedCoinsRequest) String() string { return proto.CompactTextString(m) }
-func (*ModuleDistributedCoinsRequest) ProtoMessage()    {}
-func (*ModuleDistributedCoinsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{2}
-}
-func (m *ModuleDistributedCoinsRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ModuleDistributedCoinsRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ModuleDistributedCoinsRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ModuleDistributedCoinsRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ModuleDistributedCoinsRequest.Merge(m, src)
-}
-func (m *ModuleDistributedCoinsRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *ModuleDistributedCoinsRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_ModuleDistributedCoinsRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ModuleDistributedCoinsRequest proto.InternalMessageInfo
-
-type ModuleDistributedCoinsResponse struct {
-	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
-}
-
-func (m *ModuleDistributedCoinsResponse) Reset()         { *m = ModuleDistributedCoinsResponse{} }
-func (m *ModuleDistributedCoinsResponse) String() string { return proto.CompactTextString(m) }
-func (*ModuleDistributedCoinsResponse) ProtoMessage()    {}
-func (*ModuleDistributedCoinsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{3}
-}
-func (m *ModuleDistributedCoinsResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ModuleDistributedCoinsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ModuleDistributedCoinsResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ModuleDistributedCoinsResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ModuleDistributedCoinsResponse.Merge(m, src)
-}
-func (m *ModuleDistributedCoinsResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *ModuleDistributedCoinsResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_ModuleDistributedCoinsResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ModuleDistributedCoinsResponse proto.InternalMessageInfo
-
-func (m *ModuleDistributedCoinsResponse) GetCoins() github_com_cosmos_cosmos_sdk_types.Coins {
-	if m != nil {
-		return m.Coins
-	}
-	return nil
-}
-
 type GaugeByIDRequest struct {
+	// Gague ID being queried
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
 
@@ -205,7 +127,7 @@ func (m *GaugeByIDRequest) Reset()         { *m = GaugeByIDRequest{} }
 func (m *GaugeByIDRequest) String() string { return proto.CompactTextString(m) }
 func (*GaugeByIDRequest) ProtoMessage()    {}
 func (*GaugeByIDRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{4}
+	return fileDescriptor_8124258a89427f98, []int{2}
 }
 func (m *GaugeByIDRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -242,6 +164,7 @@ func (m *GaugeByIDRequest) GetId() uint64 {
 }
 
 type GaugeByIDResponse struct {
+	// Gauge that corresponds to provided gague ID
 	Gauge *Gauge `protobuf:"bytes,1,opt,name=gauge,proto3" json:"gauge,omitempty"`
 }
 
@@ -249,7 +172,7 @@ func (m *GaugeByIDResponse) Reset()         { *m = GaugeByIDResponse{} }
 func (m *GaugeByIDResponse) String() string { return proto.CompactTextString(m) }
 func (*GaugeByIDResponse) ProtoMessage()    {}
 func (*GaugeByIDResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{5}
+	return fileDescriptor_8124258a89427f98, []int{3}
 }
 func (m *GaugeByIDResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -286,7 +209,7 @@ func (m *GaugeByIDResponse) GetGauge() *Gauge {
 }
 
 type GaugesRequest struct {
-	// pagination defines an pagination for the request.
+	// Pagination defines pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -294,7 +217,7 @@ func (m *GaugesRequest) Reset()         { *m = GaugesRequest{} }
 func (m *GaugesRequest) String() string { return proto.CompactTextString(m) }
 func (*GaugesRequest) ProtoMessage()    {}
 func (*GaugesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{6}
+	return fileDescriptor_8124258a89427f98, []int{4}
 }
 func (m *GaugesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -331,8 +254,9 @@ func (m *GaugesRequest) GetPagination() *query.PageRequest {
 }
 
 type GaugesResponse struct {
+	// Upcoming and active gauges
 	Data []Gauge `protobuf:"bytes,1,rep,name=data,proto3" json:"data"`
-	// pagination defines an pagination for the response.
+	// Pagination defines pagination for the response
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -340,7 +264,7 @@ func (m *GaugesResponse) Reset()         { *m = GaugesResponse{} }
 func (m *GaugesResponse) String() string { return proto.CompactTextString(m) }
 func (*GaugesResponse) ProtoMessage()    {}
 func (*GaugesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{7}
+	return fileDescriptor_8124258a89427f98, []int{5}
 }
 func (m *GaugesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -384,7 +308,7 @@ func (m *GaugesResponse) GetPagination() *query.PageResponse {
 }
 
 type ActiveGaugesRequest struct {
-	// pagination defines an pagination for the request.
+	// Pagination defines pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -392,7 +316,7 @@ func (m *ActiveGaugesRequest) Reset()         { *m = ActiveGaugesRequest{} }
 func (m *ActiveGaugesRequest) String() string { return proto.CompactTextString(m) }
 func (*ActiveGaugesRequest) ProtoMessage()    {}
 func (*ActiveGaugesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{8}
+	return fileDescriptor_8124258a89427f98, []int{6}
 }
 func (m *ActiveGaugesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -429,8 +353,9 @@ func (m *ActiveGaugesRequest) GetPagination() *query.PageRequest {
 }
 
 type ActiveGaugesResponse struct {
+	// Active gagues only
 	Data []Gauge `protobuf:"bytes,1,rep,name=data,proto3" json:"data"`
-	// pagination defines an pagination for the response.
+	// Pagination defines pagination for the response
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -438,7 +363,7 @@ func (m *ActiveGaugesResponse) Reset()         { *m = ActiveGaugesResponse{} }
 func (m *ActiveGaugesResponse) String() string { return proto.CompactTextString(m) }
 func (*ActiveGaugesResponse) ProtoMessage()    {}
 func (*ActiveGaugesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{9}
+	return fileDescriptor_8124258a89427f98, []int{7}
 }
 func (m *ActiveGaugesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -482,8 +407,9 @@ func (m *ActiveGaugesResponse) GetPagination() *query.PageResponse {
 }
 
 type ActiveGaugesPerDenomRequest struct {
+	// Desired denom when querying active gagues
 	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
-	// pagination defines an pagination for the request.
+	// Pagination defines pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -491,7 +417,7 @@ func (m *ActiveGaugesPerDenomRequest) Reset()         { *m = ActiveGaugesPerDeno
 func (m *ActiveGaugesPerDenomRequest) String() string { return proto.CompactTextString(m) }
 func (*ActiveGaugesPerDenomRequest) ProtoMessage()    {}
 func (*ActiveGaugesPerDenomRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{10}
+	return fileDescriptor_8124258a89427f98, []int{8}
 }
 func (m *ActiveGaugesPerDenomRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -535,8 +461,9 @@ func (m *ActiveGaugesPerDenomRequest) GetPagination() *query.PageRequest {
 }
 
 type ActiveGaugesPerDenomResponse struct {
+	// Active gagues that match denom in query
 	Data []Gauge `protobuf:"bytes,1,rep,name=data,proto3" json:"data"`
-	// pagination defines an pagination for the response.
+	// Pagination defines pagination for the response
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -544,7 +471,7 @@ func (m *ActiveGaugesPerDenomResponse) Reset()         { *m = ActiveGaugesPerDen
 func (m *ActiveGaugesPerDenomResponse) String() string { return proto.CompactTextString(m) }
 func (*ActiveGaugesPerDenomResponse) ProtoMessage()    {}
 func (*ActiveGaugesPerDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{11}
+	return fileDescriptor_8124258a89427f98, []int{9}
 }
 func (m *ActiveGaugesPerDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -588,7 +515,7 @@ func (m *ActiveGaugesPerDenomResponse) GetPagination() *query.PageResponse {
 }
 
 type UpcomingGaugesRequest struct {
-	// pagination defines an pagination for the request.
+	// Pagination defines pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -596,7 +523,7 @@ func (m *UpcomingGaugesRequest) Reset()         { *m = UpcomingGaugesRequest{} }
 func (m *UpcomingGaugesRequest) String() string { return proto.CompactTextString(m) }
 func (*UpcomingGaugesRequest) ProtoMessage()    {}
 func (*UpcomingGaugesRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{12}
+	return fileDescriptor_8124258a89427f98, []int{10}
 }
 func (m *UpcomingGaugesRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -633,8 +560,9 @@ func (m *UpcomingGaugesRequest) GetPagination() *query.PageRequest {
 }
 
 type UpcomingGaugesResponse struct {
+	// Gauges whose distribution is upcoming
 	Data []Gauge `protobuf:"bytes,1,rep,name=data,proto3" json:"data"`
-	// pagination defines an pagination for the response.
+	// Pagination defines pagination for the response
 	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -642,7 +570,7 @@ func (m *UpcomingGaugesResponse) Reset()         { *m = UpcomingGaugesResponse{}
 func (m *UpcomingGaugesResponse) String() string { return proto.CompactTextString(m) }
 func (*UpcomingGaugesResponse) ProtoMessage()    {}
 func (*UpcomingGaugesResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{13}
+	return fileDescriptor_8124258a89427f98, []int{11}
 }
 func (m *UpcomingGaugesResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -686,7 +614,9 @@ func (m *UpcomingGaugesResponse) GetPagination() *query.PageResponse {
 }
 
 type UpcomingGaugesPerDenomRequest struct {
-	Denom      string             `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// Filter for upcoming gagues that match specific denom
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+	// Pagination defines pagination for the request
 	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
@@ -694,7 +624,7 @@ func (m *UpcomingGaugesPerDenomRequest) Reset()         { *m = UpcomingGaugesPer
 func (m *UpcomingGaugesPerDenomRequest) String() string { return proto.CompactTextString(m) }
 func (*UpcomingGaugesPerDenomRequest) ProtoMessage()    {}
 func (*UpcomingGaugesPerDenomRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{14}
+	return fileDescriptor_8124258a89427f98, []int{12}
 }
 func (m *UpcomingGaugesPerDenomRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -738,15 +668,17 @@ func (m *UpcomingGaugesPerDenomRequest) GetPagination() *query.PageRequest {
 }
 
 type UpcomingGaugesPerDenomResponse struct {
-	UpcomingGauges []Gauge             `protobuf:"bytes,1,rep,name=upcoming_gauges,json=upcomingGauges,proto3" json:"upcoming_gauges"`
-	Pagination     *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+	// Upcoming gagues that match denom in query
+	UpcomingGauges []Gauge `protobuf:"bytes,1,rep,name=upcoming_gauges,json=upcomingGauges,proto3" json:"upcoming_gauges"`
+	// Pagination defines pagination for the response
+	Pagination *query.PageResponse `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
 }
 
 func (m *UpcomingGaugesPerDenomResponse) Reset()         { *m = UpcomingGaugesPerDenomResponse{} }
 func (m *UpcomingGaugesPerDenomResponse) String() string { return proto.CompactTextString(m) }
 func (*UpcomingGaugesPerDenomResponse) ProtoMessage()    {}
 func (*UpcomingGaugesPerDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{15}
+	return fileDescriptor_8124258a89427f98, []int{13}
 }
 func (m *UpcomingGaugesPerDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -790,16 +722,20 @@ func (m *UpcomingGaugesPerDenomResponse) GetPagination() *query.PageResponse {
 }
 
 type RewardsEstRequest struct {
-	Owner    string   `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
-	LockIds  []uint64 `protobuf:"varint,2,rep,packed,name=lock_ids,json=lockIds,proto3" json:"lock_ids,omitempty"`
-	EndEpoch int64    `protobuf:"varint,3,opt,name=end_epoch,json=endEpoch,proto3" json:"end_epoch,omitempty"`
+	// Address that is being queried for future estimated rewards
+	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty" yaml:"owner"`
+	// Lock IDs included in future reward estimation
+	LockIds []uint64 `protobuf:"varint,2,rep,packed,name=lock_ids,json=lockIds,proto3" json:"lock_ids,omitempty"`
+	// Upper time limit of reward estimation
+	// Lower limit is current epoch
+	EndEpoch int64 `protobuf:"varint,3,opt,name=end_epoch,json=endEpoch,proto3" json:"end_epoch,omitempty"`
 }
 
 func (m *RewardsEstRequest) Reset()         { *m = RewardsEstRequest{} }
 func (m *RewardsEstRequest) String() string { return proto.CompactTextString(m) }
 func (*RewardsEstRequest) ProtoMessage()    {}
 func (*RewardsEstRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{16}
+	return fileDescriptor_8124258a89427f98, []int{14}
 }
 func (m *RewardsEstRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -850,6 +786,8 @@ func (m *RewardsEstRequest) GetEndEpoch() int64 {
 }
 
 type RewardsEstResponse struct {
+	// Estimated coin rewards that will be recieved at provided address
+	// from specified locks between current time and end epoch
 	Coins github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,1,rep,name=coins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"coins"`
 }
 
@@ -857,7 +795,7 @@ func (m *RewardsEstResponse) Reset()         { *m = RewardsEstResponse{} }
 func (m *RewardsEstResponse) String() string { return proto.CompactTextString(m) }
 func (*RewardsEstResponse) ProtoMessage()    {}
 func (*RewardsEstResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{17}
+	return fileDescriptor_8124258a89427f98, []int{15}
 }
 func (m *RewardsEstResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -900,7 +838,7 @@ func (m *QueryLockableDurationsRequest) Reset()         { *m = QueryLockableDura
 func (m *QueryLockableDurationsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryLockableDurationsRequest) ProtoMessage()    {}
 func (*QueryLockableDurationsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{18}
+	return fileDescriptor_8124258a89427f98, []int{16}
 }
 func (m *QueryLockableDurationsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -930,6 +868,7 @@ func (m *QueryLockableDurationsRequest) XXX_DiscardUnknown() {
 var xxx_messageInfo_QueryLockableDurationsRequest proto.InternalMessageInfo
 
 type QueryLockableDurationsResponse struct {
+	// Time durations that users can lock coins for in order to recieve rewards
 	LockableDurations []time.Duration `protobuf:"bytes,1,rep,name=lockable_durations,json=lockableDurations,proto3,stdduration" json:"lockable_durations" yaml:"lockable_durations"`
 }
 
@@ -937,7 +876,7 @@ func (m *QueryLockableDurationsResponse) Reset()         { *m = QueryLockableDur
 func (m *QueryLockableDurationsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryLockableDurationsResponse) ProtoMessage()    {}
 func (*QueryLockableDurationsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_8124258a89427f98, []int{19}
+	return fileDescriptor_8124258a89427f98, []int{17}
 }
 func (m *QueryLockableDurationsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -976,8 +915,6 @@ func (m *QueryLockableDurationsResponse) GetLockableDurations() []time.Duration 
 func init() {
 	proto.RegisterType((*ModuleToDistributeCoinsRequest)(nil), "osmosis.incentives.ModuleToDistributeCoinsRequest")
 	proto.RegisterType((*ModuleToDistributeCoinsResponse)(nil), "osmosis.incentives.ModuleToDistributeCoinsResponse")
-	proto.RegisterType((*ModuleDistributedCoinsRequest)(nil), "osmosis.incentives.ModuleDistributedCoinsRequest")
-	proto.RegisterType((*ModuleDistributedCoinsResponse)(nil), "osmosis.incentives.ModuleDistributedCoinsResponse")
 	proto.RegisterType((*GaugeByIDRequest)(nil), "osmosis.incentives.GaugeByIDRequest")
 	proto.RegisterType((*GaugeByIDResponse)(nil), "osmosis.incentives.GaugeByIDResponse")
 	proto.RegisterType((*GaugesRequest)(nil), "osmosis.incentives.GaugesRequest")
@@ -999,76 +936,74 @@ func init() {
 func init() { proto.RegisterFile("osmosis/incentives/query.proto", fileDescriptor_8124258a89427f98) }
 
 var fileDescriptor_8124258a89427f98 = []byte{
-	// 1103 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0x4d, 0x6f, 0x1b, 0x45,
-	0x18, 0xc7, 0x33, 0x4e, 0x52, 0x9a, 0x87, 0x36, 0x34, 0x43, 0x28, 0x89, 0xdb, 0xae, 0xcd, 0xaa,
-	0x4d, 0xdd, 0x94, 0xec, 0xc6, 0x76, 0x93, 0x20, 0xde, 0x24, 0x8c, 0x4b, 0xa9, 0x04, 0xa2, 0xac,
-	0x40, 0x48, 0x48, 0x68, 0xb5, 0xf6, 0x0e, 0xdb, 0x55, 0xec, 0x1d, 0xd7, 0xb3, 0x9b, 0x60, 0x45,
-	0xb9, 0x00, 0xe7, 0x0a, 0x44, 0x54, 0x71, 0xe8, 0x27, 0xe0, 0x08, 0x12, 0x37, 0x38, 0x70, 0xea,
-	0xb1, 0x12, 0x17, 0x4e, 0x29, 0x4a, 0xf8, 0x04, 0xfd, 0x04, 0x68, 0x67, 0x66, 0xfd, 0xba, 0x5e,
-	0x3b, 0x88, 0x46, 0x39, 0x39, 0x93, 0xe7, 0xed, 0xf7, 0x3c, 0x1e, 0xcf, 0xff, 0x01, 0x85, 0xb2,
-	0x3a, 0x65, 0x2e, 0xd3, 0x5d, 0xaf, 0x4a, 0x3c, 0xdf, 0xdd, 0x22, 0x4c, 0xbf, 0x17, 0x90, 0x66,
-	0x4b, 0x6b, 0x34, 0xa9, 0x4f, 0x31, 0x96, 0x76, 0xad, 0x63, 0x4f, 0xcf, 0x3b, 0xd4, 0xa1, 0xdc,
-	0xac, 0x87, 0x7f, 0x09, 0xcf, 0xf4, 0x45, 0x87, 0x52, 0xa7, 0x46, 0x74, 0xab, 0xe1, 0xea, 0x96,
-	0xe7, 0x51, 0xdf, 0xf2, 0x5d, 0xea, 0x31, 0x69, 0x55, 0xa4, 0x95, 0x9f, 0x2a, 0xc1, 0x97, 0xba,
-	0x1d, 0x34, 0xb9, 0x43, 0x64, 0xaf, 0xf2, 0x42, 0x7a, 0xc5, 0x62, 0x44, 0xdf, 0xca, 0x57, 0x88,
-	0x6f, 0xe5, 0xf5, 0x2a, 0x75, 0x23, 0xfb, 0x72, 0xb7, 0x9d, 0x03, 0xb6, 0xbd, 0x1a, 0x96, 0xe3,
-	0x7a, 0x3d, 0xb9, 0x62, 0x7a, 0x72, 0xac, 0xc0, 0x21, 0xd2, 0xbe, 0x18, 0xd9, 0x6b, 0xb4, 0xba,
-	0x19, 0x34, 0xf8, 0x87, 0x30, 0xa9, 0x59, 0x50, 0x3e, 0xa4, 0x76, 0x50, 0x23, 0x9f, 0xd0, 0xb2,
-	0xcb, 0xfc, 0xa6, 0x5b, 0x09, 0x7c, 0xf2, 0x2e, 0x75, 0x3d, 0x66, 0x90, 0x7b, 0x01, 0x61, 0xbe,
-	0xfa, 0x2d, 0x82, 0xcc, 0x50, 0x17, 0xd6, 0xa0, 0x1e, 0x23, 0xd8, 0x82, 0xe9, 0x10, 0x9d, 0x2d,
-	0xa0, 0xec, 0x64, 0xee, 0xf9, 0xc2, 0xa2, 0x26, 0xe0, 0xb5, 0x10, 0x5e, 0x93, 0xd8, 0x5a, 0x18,
-	0x52, 0x5a, 0x7d, 0xb4, 0x9f, 0x99, 0xf8, 0xe9, 0x49, 0x26, 0xe7, 0xb8, 0xfe, 0xdd, 0xa0, 0xa2,
-	0x55, 0x69, 0x5d, 0x97, 0x9d, 0x8a, 0x8f, 0x15, 0x66, 0x6f, 0xea, 0x7e, 0xab, 0x41, 0x98, 0x26,
-	0x6a, 0x88, 0xcc, 0x6a, 0x06, 0x2e, 0x09, 0x8a, 0x0e, 0x83, 0xdd, 0xc3, 0xf9, 0x0d, 0x8a, 0x5a,
-	0x19, 0xf4, 0x38, 0x3e, 0x4c, 0x15, 0xce, 0xdd, 0x0a, 0x27, 0x5f, 0x6a, 0xdd, 0x2e, 0x4b, 0x32,
-	0x3c, 0x0b, 0x29, 0xd7, 0x5e, 0x40, 0x59, 0x94, 0x9b, 0x32, 0x52, 0xae, 0xad, 0x96, 0x61, 0xae,
-	0xcb, 0x47, 0xb2, 0xe9, 0x30, 0xcd, 0xbf, 0x32, 0xee, 0x17, 0xb2, 0x0d, 0xde, 0x43, 0x8d, 0x47,
-	0x19, 0xc2, 0x4f, 0xfd, 0x0c, 0xce, 0xf2, 0x73, 0x34, 0x00, 0xfc, 0x1e, 0x40, 0xe7, 0x66, 0xc8,
-	0x34, 0x4b, 0x3d, 0x2d, 0x8a, 0x7b, 0x1e, 0x35, 0x7a, 0xc7, 0x72, 0x88, 0x8c, 0x35, 0xba, 0x22,
-	0xd5, 0xfb, 0x08, 0x66, 0xa3, 0xcc, 0x12, 0xae, 0x08, 0x53, 0xb6, 0xe5, 0x5b, 0xed, 0xb9, 0x0d,
-	0x63, 0x2b, 0x4d, 0x85, 0x73, 0x33, 0xb8, 0x33, 0xbe, 0xd5, 0xc3, 0x93, 0xe2, 0x3c, 0x57, 0x47,
-	0xf2, 0x88, 0x8a, 0x3d, 0x40, 0x5f, 0xc0, 0x8b, 0xef, 0x54, 0xc3, 0x2a, 0xcf, 0xa6, 0xdf, 0x3d,
-	0x04, 0xf3, 0xbd, 0xf9, 0x4f, 0x44, 0xd7, 0x3b, 0x70, 0xa1, 0x9b, 0xea, 0x0e, 0x69, 0x96, 0x89,
-	0x47, 0xeb, 0x51, 0xf7, 0xf3, 0x30, 0x6d, 0x87, 0x67, 0xde, 0xf8, 0x8c, 0x21, 0x0e, 0x7d, 0x33,
-	0x49, 0xfd, 0xe7, 0x99, 0x3c, 0x44, 0x70, 0x31, 0xbe, 0xfa, 0x89, 0x98, 0x8d, 0x09, 0x2f, 0x7d,
-	0xda, 0xa8, 0xd2, 0xba, 0xeb, 0x39, 0xcf, 0xe6, 0x4e, 0x3c, 0x40, 0x70, 0xbe, 0xbf, 0xc2, 0x89,
-	0xe8, 0x7c, 0x17, 0x2e, 0xf5, 0x72, 0x1d, 0xef, 0xbd, 0xf8, 0x05, 0x81, 0x32, 0xac, 0xbe, 0x9c,
-	0xcf, 0xfb, 0xf0, 0x42, 0x20, 0x3d, 0x4c, 0xfe, 0x52, 0xb1, 0x71, 0x47, 0x35, 0x1b, 0xf4, 0x64,
-	0xfe, 0xff, 0x86, 0xc6, 0x60, 0xce, 0x20, 0xdb, 0x56, 0xd3, 0x66, 0x37, 0x99, 0x1f, 0x0d, 0x6a,
-	0x09, 0xa6, 0xe9, 0xb6, 0x47, 0x9a, 0x62, 0x50, 0xa5, 0x73, 0x4f, 0xf7, 0x33, 0x67, 0x5a, 0x56,
-	0xbd, 0xf6, 0xba, 0xca, 0xff, 0xad, 0x1a, 0xc2, 0x8c, 0x17, 0xe1, 0x74, 0xa8, 0x97, 0xa6, 0x6b,
-	0xb3, 0x85, 0x54, 0x76, 0x32, 0x37, 0x65, 0x3c, 0x17, 0x9e, 0x6f, 0xdb, 0x0c, 0x5f, 0x80, 0x19,
-	0xe2, 0xd9, 0x26, 0x69, 0xd0, 0xea, 0xdd, 0x85, 0xc9, 0x2c, 0xca, 0x4d, 0x1a, 0xa7, 0x89, 0x67,
-	0xdf, 0x0c, 0xcf, 0xea, 0x36, 0xe0, 0xee, 0xa2, 0xc7, 0xaa, 0x94, 0x1f, 0x87, 0x73, 0xf9, 0x80,
-	0x56, 0x37, 0xad, 0x4a, 0x8d, 0x94, 0xe5, 0xe2, 0xd1, 0x56, 0xca, 0xef, 0x11, 0x28, 0xc3, 0x3c,
-	0x24, 0x26, 0x05, 0x5c, 0x93, 0x46, 0x33, 0x5a, 0x5c, 0x3a, 0xcc, 0x62, 0xb5, 0xd1, 0xa2, 0xd5,
-	0x46, 0x8b, 0xe2, 0x4b, 0x57, 0x42, 0xe6, 0xa7, 0xfb, 0x99, 0x45, 0x31, 0xc8, 0xc1, 0x14, 0xea,
-	0x8f, 0x4f, 0x32, 0xc8, 0x98, 0xab, 0xf5, 0x17, 0x2e, 0x3c, 0x38, 0x0b, 0xd3, 0x9c, 0x09, 0xff,
-	0x81, 0xe0, 0xe5, 0x21, 0xfb, 0x06, 0x2e, 0xc4, 0x5d, 0xa1, 0xe4, 0xfd, 0x25, 0x5d, 0x3c, 0x52,
-	0x8c, 0xe8, 0x5f, 0x7d, 0xfb, 0xeb, 0x3f, 0xff, 0xf9, 0x21, 0xf5, 0x1a, 0x5e, 0xd7, 0x63, 0x56,
-	0xab, 0x68, 0x0f, 0xab, 0xf3, 0x24, 0xa6, 0x4f, 0x4d, 0xbb, 0x9d, 0xc6, 0xe4, 0xdf, 0x01, 0xfe,
-	0x0d, 0xc1, 0xf9, 0xf8, 0x65, 0x04, 0xe7, 0x87, 0xf3, 0x0c, 0x59, 0x6d, 0xd2, 0x85, 0xa3, 0x84,
-	0xc8, 0x0e, 0xde, 0xe4, 0x1d, 0xac, 0xe3, 0x1b, 0x63, 0x74, 0xd0, 0xc1, 0xb7, 0x25, 0xff, 0x7d,
-	0x04, 0x33, 0xed, 0x1d, 0x05, 0x5f, 0x1e, 0xfe, 0xcb, 0xed, 0xac, 0x39, 0xe9, 0x2b, 0x23, 0xbc,
-	0x24, 0xd8, 0x0d, 0x0e, 0xa6, 0xe1, 0x57, 0x93, 0xc0, 0xf8, 0xc3, 0x61, 0x56, 0x5a, 0xa6, 0x6b,
-	0xeb, 0x3b, 0xae, 0xbd, 0x8b, 0x77, 0xe0, 0x94, 0x7c, 0x15, 0x5e, 0x19, 0x5a, 0xa6, 0x3d, 0x2f,
-	0x35, 0xc9, 0x45, 0x62, 0x2c, 0x73, 0x8c, 0xcb, 0x58, 0x1d, 0x89, 0xc1, 0xf0, 0x1e, 0x82, 0x33,
-	0xdd, 0x6a, 0x88, 0xaf, 0xc6, 0x15, 0x88, 0xd9, 0x51, 0xd2, 0xb9, 0xd1, 0x8e, 0x92, 0x27, 0xcf,
-	0x79, 0xae, 0xe3, 0x6b, 0x49, 0x3c, 0x16, 0x8f, 0x94, 0xcf, 0x2a, 0xfe, 0xb5, 0x6f, 0x71, 0x89,
-	0x9e, 0x62, 0xac, 0x8f, 0xaa, 0xda, 0x27, 0x1a, 0xe9, 0xd5, 0xf1, 0x03, 0x24, 0xee, 0x1b, 0x1c,
-	0x77, 0x0d, 0x17, 0xc7, 0xc6, 0x35, 0x1b, 0xa4, 0x69, 0x0a, 0x35, 0x7a, 0x88, 0x60, 0xb6, 0x57,
-	0x45, 0xf0, 0xb5, 0x38, 0x82, 0x58, 0x8d, 0x4f, 0x2f, 0x8f, 0xe3, 0x2a, 0x31, 0x8b, 0x1c, 0x73,
-	0x05, 0x5f, 0x4f, 0xc2, 0xec, 0x93, 0x2b, 0xfc, 0xfb, 0x80, 0xf8, 0xb7, 0x27, 0x9b, 0x1f, 0x5d,
-	0xbb, 0x7f, 0xb6, 0x85, 0xa3, 0x84, 0x48, 0xec, 0xb7, 0x38, 0xf6, 0x06, 0x5e, 0x3b, 0x02, 0x76,
-	0xd7, 0x7c, 0xf7, 0x10, 0x40, 0x47, 0x7b, 0x70, 0xec, 0x0f, 0x73, 0x40, 0x10, 0xd3, 0x4b, 0xa3,
-	0xdc, 0x24, 0xdc, 0x06, 0x87, 0xcb, 0x63, 0x3d, 0x09, 0xae, 0x29, 0xe2, 0x4c, 0xc2, 0x7c, 0x7d,
-	0x87, 0x0b, 0xe9, 0x2e, 0xfe, 0x19, 0xc1, 0xdc, 0x80, 0xe4, 0xc4, 0x8f, 0x34, 0x51, 0xc0, 0xe2,
-	0x47, 0x9a, 0xac, 0x68, 0xea, 0x3a, 0xa7, 0x5e, 0xc5, 0x5a, 0x12, 0xf5, 0xa0, 0x60, 0x95, 0x3e,
-	0x7a, 0x74, 0xa0, 0xa0, 0xc7, 0x07, 0x0a, 0xfa, 0xfb, 0x40, 0x41, 0xdf, 0x1d, 0x2a, 0x13, 0x8f,
-	0x0f, 0x95, 0x89, 0xbf, 0x0e, 0x95, 0x89, 0xcf, 0xd7, 0xba, 0x84, 0x59, 0xe6, 0x5c, 0xa9, 0x59,
-	0x15, 0xd6, 0x2e, 0xb0, 0xb5, 0xa1, 0x7f, 0xd5, 0x5d, 0x85, 0x6b, 0x75, 0xe5, 0x14, 0x97, 0xcd,
-	0xe2, 0xbf, 0x01, 0x00, 0x00, 0xff, 0xff, 0x54, 0x04, 0x4d, 0xb2, 0x89, 0x10, 0x00, 0x00,
+	// 1057 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x96, 0xcf, 0x6f, 0x1b, 0x45,
+	0x14, 0xc7, 0x33, 0x4e, 0x5c, 0xda, 0xd7, 0x12, 0x9a, 0x21, 0x40, 0xe2, 0xb6, 0x6b, 0xb3, 0x6a,
+	0x53, 0x37, 0x25, 0x3b, 0x71, 0x4c, 0x53, 0x04, 0x02, 0x09, 0xe3, 0x52, 0x2a, 0x81, 0x14, 0x56,
+	0x20, 0x24, 0x24, 0xb4, 0x5a, 0x7b, 0x87, 0xed, 0x2a, 0xf6, 0x8e, 0xbb, 0xb3, 0x9b, 0x60, 0x45,
+	0xb9, 0x20, 0xce, 0x15, 0x88, 0x08, 0x71, 0xe8, 0x5f, 0xc0, 0x11, 0x24, 0x8e, 0x1c, 0x38, 0xf5,
+	0x58, 0x09, 0x09, 0x71, 0x4a, 0x51, 0xc2, 0x5f, 0xd0, 0xbf, 0x00, 0xed, 0xec, 0xac, 0xbd, 0xb6,
+	0xd7, 0xeb, 0x04, 0xd1, 0x2a, 0x27, 0x67, 0xf2, 0x7e, 0x7d, 0xde, 0xd7, 0xe3, 0xf7, 0x06, 0x14,
+	0xc6, 0xdb, 0x8c, 0x3b, 0x9c, 0x38, 0x6e, 0x93, 0xba, 0xbe, 0xb3, 0x45, 0x39, 0xb9, 0x17, 0x50,
+	0xaf, 0xab, 0x75, 0x3c, 0xe6, 0x33, 0x8c, 0xa5, 0x5d, 0xeb, 0xdb, 0x0b, 0xf3, 0x36, 0xb3, 0x99,
+	0x30, 0x93, 0xf0, 0xaf, 0xc8, 0xb3, 0x70, 0xd1, 0x66, 0xcc, 0x6e, 0x51, 0x62, 0x76, 0x1c, 0x62,
+	0xba, 0x2e, 0xf3, 0x4d, 0xdf, 0x61, 0x2e, 0x97, 0x56, 0x45, 0x5a, 0xc5, 0xa9, 0x11, 0x7c, 0x49,
+	0xac, 0xc0, 0x13, 0x0e, 0xb1, 0xbd, 0x29, 0x0a, 0x91, 0x86, 0xc9, 0x29, 0xd9, 0xaa, 0x34, 0xa8,
+	0x6f, 0x56, 0x48, 0x93, 0x39, 0xb1, 0x7d, 0x39, 0x69, 0x17, 0x80, 0x3d, 0xaf, 0x8e, 0x69, 0x3b,
+	0xee, 0x40, 0xae, 0x94, 0x9e, 0x6c, 0x33, 0xb0, 0xa9, 0xb4, 0x2f, 0xc6, 0xf6, 0x16, 0x6b, 0x6e,
+	0x06, 0x1d, 0xf1, 0x11, 0x99, 0xd4, 0x12, 0x28, 0x1f, 0x31, 0x2b, 0x68, 0xd1, 0x4f, 0x58, 0xdd,
+	0xe1, 0xbe, 0xe7, 0x34, 0x02, 0x9f, 0xbe, 0xc7, 0x1c, 0x97, 0xeb, 0xf4, 0x5e, 0x40, 0xb9, 0xaf,
+	0x7e, 0x83, 0xa0, 0x38, 0xd6, 0x85, 0x77, 0x98, 0xcb, 0x29, 0x36, 0x21, 0x1f, 0xa2, 0xf3, 0x05,
+	0x54, 0x9a, 0x2e, 0x9f, 0x5d, 0x5b, 0xd4, 0x22, 0x78, 0x2d, 0x84, 0xd7, 0x24, 0xb6, 0x16, 0x86,
+	0xd4, 0x56, 0x1f, 0xee, 0x17, 0xa7, 0x7e, 0x7a, 0x5c, 0x2c, 0xdb, 0x8e, 0x7f, 0x37, 0x68, 0x68,
+	0x4d, 0xd6, 0x26, 0xb2, 0xd3, 0xe8, 0x63, 0x85, 0x5b, 0x9b, 0xc4, 0xef, 0x76, 0x28, 0xd7, 0xa2,
+	0x1a, 0x51, 0x66, 0x55, 0x85, 0xf3, 0xb7, 0xc3, 0x96, 0x6a, 0xdd, 0x3b, 0x75, 0x89, 0x86, 0x67,
+	0x21, 0xe7, 0x58, 0x0b, 0xa8, 0x84, 0xca, 0x33, 0x7a, 0xce, 0xb1, 0xd4, 0x3a, 0xcc, 0x25, 0x7c,
+	0x24, 0x1b, 0x81, 0xbc, 0xd0, 0x42, 0xf8, 0x85, 0x6c, 0xa3, 0x5f, 0xb0, 0x26, 0xa2, 0xf4, 0xc8,
+	0x4f, 0xfd, 0x0c, 0x9e, 0x17, 0xe7, 0x58, 0x01, 0xfc, 0x3e, 0x40, 0x5f, 0x72, 0x99, 0x66, 0x69,
+	0xa0, 0xc5, 0xe8, 0x02, 0xc5, 0x8d, 0x6e, 0x98, 0x36, 0x95, 0xb1, 0x7a, 0x22, 0x52, 0xbd, 0x8f,
+	0x60, 0x36, 0xce, 0x2c, 0xe1, 0xaa, 0x30, 0x63, 0x99, 0xbe, 0xd9, 0xd3, 0x6d, 0x1c, 0x5b, 0x6d,
+	0x26, 0xd4, 0x4d, 0x17, 0xce, 0xf8, 0xf6, 0x00, 0x4f, 0x4e, 0xf0, 0x5c, 0x9d, 0xc8, 0x13, 0x55,
+	0x1c, 0x00, 0xfa, 0x02, 0x5e, 0x7c, 0xb7, 0x19, 0x56, 0x79, 0x3a, 0xfd, 0xee, 0x21, 0x98, 0x1f,
+	0xcc, 0x7f, 0x22, 0xba, 0xde, 0x81, 0x0b, 0x49, 0xaa, 0x0d, 0xea, 0xd5, 0xa9, 0xcb, 0xda, 0x71,
+	0xf7, 0xf3, 0x90, 0xb7, 0xc2, 0xb3, 0x68, 0xfc, 0x8c, 0x1e, 0x1d, 0x86, 0x34, 0xc9, 0xfd, 0x67,
+	0x4d, 0x1e, 0x20, 0xb8, 0x98, 0x5e, 0xfd, 0x44, 0x68, 0x63, 0xc0, 0x4b, 0x9f, 0x76, 0x9a, 0xac,
+	0xed, 0xb8, 0xf6, 0xd3, 0xb9, 0x13, 0x3f, 0x20, 0x78, 0x79, 0xb8, 0xc2, 0x89, 0xe8, 0x7c, 0x17,
+	0x2e, 0x0d, 0x72, 0x3d, 0xdb, 0x7b, 0xf1, 0x0b, 0x02, 0x65, 0x5c, 0x7d, 0xa9, 0xcf, 0x07, 0xf0,
+	0x42, 0x20, 0x3d, 0x0c, 0x31, 0xa9, 0xf8, 0x51, 0xa5, 0x9a, 0x0d, 0x06, 0x32, 0xff, 0x7f, 0xa2,
+	0x71, 0x98, 0xd3, 0xe9, 0xb6, 0xe9, 0x59, 0xfc, 0x16, 0xf7, 0x63, 0xa1, 0x96, 0x20, 0xcf, 0xb6,
+	0x5d, 0xea, 0x45, 0x42, 0xd5, 0xce, 0x3f, 0xd9, 0x2f, 0x9e, 0xeb, 0x9a, 0xed, 0xd6, 0x9b, 0xaa,
+	0xf8, 0xb7, 0xaa, 0x47, 0x66, 0xbc, 0x08, 0xa7, 0xc3, 0x45, 0x64, 0x38, 0x16, 0x5f, 0xc8, 0x95,
+	0xa6, 0xcb, 0x33, 0xfa, 0x73, 0xe1, 0xf9, 0x8e, 0xc5, 0xf1, 0x05, 0x38, 0x43, 0x5d, 0xcb, 0xa0,
+	0x1d, 0xd6, 0xbc, 0xbb, 0x30, 0x5d, 0x42, 0xe5, 0x69, 0xfd, 0x34, 0x75, 0xad, 0x5b, 0xe1, 0x59,
+	0xdd, 0x06, 0x9c, 0x2c, 0xfa, 0xec, 0x56, 0x50, 0x11, 0x2e, 0x7d, 0x1c, 0xea, 0xf2, 0x21, 0x6b,
+	0x6e, 0x9a, 0x8d, 0x16, 0xad, 0xcb, 0x8d, 0xde, 0x5b, 0x95, 0xdf, 0x21, 0x50, 0xc6, 0x79, 0x48,
+	0x4c, 0x06, 0xb8, 0x25, 0x8d, 0x46, 0xfc, 0x22, 0xe8, 0x33, 0x47, 0x6f, 0x06, 0x2d, 0x7e, 0x33,
+	0x68, 0x71, 0x7c, 0xed, 0x4a, 0xc8, 0xfc, 0x64, 0xbf, 0xb8, 0x18, 0x09, 0x39, 0x9a, 0x42, 0xfd,
+	0xf1, 0x71, 0x11, 0xe9, 0x73, 0xad, 0xe1, 0xc2, 0x6b, 0x7f, 0x9e, 0x85, 0xbc, 0x60, 0xc2, 0xbf,
+	0x23, 0x78, 0x65, 0xcc, 0x22, 0xc7, 0x6b, 0x69, 0x57, 0x28, 0xfb, 0x61, 0x50, 0xa8, 0x1e, 0x2b,
+	0x26, 0xea, 0x5f, 0x7d, 0xe7, 0xeb, 0x3f, 0xfe, 0xf9, 0x3e, 0xf7, 0x06, 0x5e, 0x27, 0x29, 0x6f,
+	0x96, 0xf8, 0x81, 0xd3, 0x16, 0x49, 0x0c, 0x9f, 0x19, 0x56, 0x2f, 0x8d, 0x21, 0xbe, 0x03, 0x7c,
+	0x1f, 0xc1, 0x99, 0xde, 0x8e, 0xc7, 0x97, 0xc7, 0xdf, 0xfc, 0xfe, 0x33, 0xa1, 0x70, 0x65, 0x82,
+	0x97, 0x44, 0x7b, 0x5d, 0xa0, 0x69, 0xf8, 0xb5, 0x2c, 0x34, 0xf1, 0xc3, 0x33, 0x1a, 0x5d, 0xc3,
+	0xb1, 0xc8, 0x8e, 0x63, 0xed, 0xe2, 0x1d, 0x38, 0x25, 0x7f, 0x55, 0xaf, 0x8e, 0x2d, 0xd3, 0x93,
+	0x4c, 0xcd, 0x72, 0x91, 0x18, 0xcb, 0x02, 0xe3, 0x32, 0x56, 0x27, 0x62, 0x70, 0xbc, 0x87, 0xe0,
+	0x5c, 0x72, 0x9b, 0xe0, 0xab, 0x69, 0x05, 0x52, 0x76, 0x7c, 0xa1, 0x3c, 0xd9, 0x51, 0xf2, 0x54,
+	0x04, 0xcf, 0x75, 0x7c, 0x2d, 0x8b, 0xc7, 0x14, 0x91, 0x72, 0x2c, 0xe1, 0x5f, 0x87, 0x16, 0x7f,
+	0x3c, 0xca, 0x30, 0x99, 0x54, 0x75, 0x68, 0xe8, 0x16, 0x56, 0x8f, 0x1e, 0x20, 0x71, 0xdf, 0x12,
+	0xb8, 0x37, 0x70, 0xf5, 0xc8, 0xb8, 0x46, 0x87, 0x7a, 0x46, 0x34, 0xcd, 0x1f, 0x20, 0x98, 0x1d,
+	0x9c, 0xc2, 0xf8, 0x5a, 0x1a, 0x41, 0xea, 0x8e, 0x2c, 0x2c, 0x1f, 0xc5, 0x55, 0x62, 0x56, 0x05,
+	0xe6, 0x0a, 0xbe, 0x9e, 0x85, 0x39, 0x34, 0xee, 0xf1, 0x6f, 0x23, 0xcb, 0xb3, 0xa7, 0x6c, 0x65,
+	0x72, 0xed, 0x61, 0x6d, 0xd7, 0x8e, 0x13, 0x22, 0xb1, 0xdf, 0x16, 0xd8, 0x37, 0xf1, 0x8d, 0x63,
+	0x60, 0x27, 0xf4, 0xdd, 0x43, 0x00, 0xfd, 0xd9, 0x8d, 0x53, 0x7f, 0x98, 0x23, 0x0b, 0xa5, 0xb0,
+	0x34, 0xc9, 0x4d, 0xc2, 0xdd, 0x14, 0x70, 0x15, 0x4c, 0xb2, 0xe0, 0xbc, 0x28, 0xce, 0xa0, 0xdc,
+	0x27, 0x3b, 0x62, 0x11, 0xed, 0xe2, 0x9f, 0x11, 0xcc, 0x8d, 0x8c, 0xec, 0x74, 0x49, 0x33, 0x17,
+	0x40, 0xba, 0xa4, 0xd9, 0x1b, 0x41, 0x5d, 0x17, 0xd4, 0xab, 0x58, 0xcb, 0xa2, 0x1e, 0x1d, 0xf8,
+	0xb5, 0x8d, 0x87, 0x07, 0x0a, 0x7a, 0x74, 0xa0, 0xa0, 0xbf, 0x0f, 0x14, 0xf4, 0xed, 0xa1, 0x32,
+	0xf5, 0xe8, 0x50, 0x99, 0xfa, 0xeb, 0x50, 0x99, 0xfa, 0x7c, 0x3d, 0xb1, 0xd8, 0x64, 0xce, 0x95,
+	0x96, 0xd9, 0xe0, 0xbd, 0x02, 0x5b, 0x95, 0x2a, 0xf9, 0x2a, 0x59, 0x46, 0x2c, 0xbb, 0xc6, 0x29,
+	0xb1, 0x77, 0xaa, 0xff, 0x06, 0x00, 0x00, 0xff, 0xff, 0xb6, 0xef, 0xf0, 0x21, 0x23, 0x0f, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1083,27 +1018,27 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// returns coins that is going to be distributed
+	// ModuleToDistributeCoins returns coins that are going to be distributed
 	ModuleToDistributeCoins(ctx context.Context, in *ModuleToDistributeCoinsRequest, opts ...grpc.CallOption) (*ModuleToDistributeCoinsResponse, error)
-	// returns coins that are distributed by module so far
-	ModuleDistributedCoins(ctx context.Context, in *ModuleDistributedCoinsRequest, opts ...grpc.CallOption) (*ModuleDistributedCoinsResponse, error)
-	// returns Gauge by id
+	// GaugeByID returns gauges by their respective ID
 	GaugeByID(ctx context.Context, in *GaugeByIDRequest, opts ...grpc.CallOption) (*GaugeByIDResponse, error)
-	// returns gauges both upcoming and active
+	// Gauges returns both upcoming and active gauges
 	Gauges(ctx context.Context, in *GaugesRequest, opts ...grpc.CallOption) (*GaugesResponse, error)
-	// returns active gauges
+	// ActiveGauges returns active gauges
 	ActiveGauges(ctx context.Context, in *ActiveGaugesRequest, opts ...grpc.CallOption) (*ActiveGaugesResponse, error)
-	// returns active gauges per denom
+	// ActiveGaugesPerDenom returns active gauges by denom
 	ActiveGaugesPerDenom(ctx context.Context, in *ActiveGaugesPerDenomRequest, opts ...grpc.CallOption) (*ActiveGaugesPerDenomResponse, error)
-	// returns scheduled gauges
+	// Returns scheduled gauges that have not yet occured
 	UpcomingGauges(ctx context.Context, in *UpcomingGaugesRequest, opts ...grpc.CallOption) (*UpcomingGaugesResponse, error)
-	// returns scheduled gauges per denom
+	// UpcomingGaugesPerDenom returns scheduled gauges that have not yet occured
+	// by denom
 	UpcomingGaugesPerDenom(ctx context.Context, in *UpcomingGaugesPerDenomRequest, opts ...grpc.CallOption) (*UpcomingGaugesPerDenomResponse, error)
-	// RewardsEst returns an estimate of the rewards at a future specific time.
-	// The querier either provides an address or a set of locks
-	// for which they want to find the associated rewards.
+	// RewardsEst returns an estimate of the rewards from now until a specified
+	// time in the future The querier either provides an address or a set of locks
+	// for which they want to find the associated rewards
 	RewardsEst(ctx context.Context, in *RewardsEstRequest, opts ...grpc.CallOption) (*RewardsEstResponse, error)
-	// returns lockable durations that are valid to give incentives
+	// LockableDurations returns lockable durations that are valid to distribute
+	// incentives for
 	LockableDurations(ctx context.Context, in *QueryLockableDurationsRequest, opts ...grpc.CallOption) (*QueryLockableDurationsResponse, error)
 }
 
@@ -1118,15 +1053,6 @@ func NewQueryClient(cc grpc1.ClientConn) QueryClient {
 func (c *queryClient) ModuleToDistributeCoins(ctx context.Context, in *ModuleToDistributeCoinsRequest, opts ...grpc.CallOption) (*ModuleToDistributeCoinsResponse, error) {
 	out := new(ModuleToDistributeCoinsResponse)
 	err := c.cc.Invoke(ctx, "/osmosis.incentives.Query/ModuleToDistributeCoins", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) ModuleDistributedCoins(ctx context.Context, in *ModuleDistributedCoinsRequest, opts ...grpc.CallOption) (*ModuleDistributedCoinsResponse, error) {
-	out := new(ModuleDistributedCoinsResponse)
-	err := c.cc.Invoke(ctx, "/osmosis.incentives.Query/ModuleDistributedCoins", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1207,27 +1133,27 @@ func (c *queryClient) LockableDurations(ctx context.Context, in *QueryLockableDu
 
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// returns coins that is going to be distributed
+	// ModuleToDistributeCoins returns coins that are going to be distributed
 	ModuleToDistributeCoins(context.Context, *ModuleToDistributeCoinsRequest) (*ModuleToDistributeCoinsResponse, error)
-	// returns coins that are distributed by module so far
-	ModuleDistributedCoins(context.Context, *ModuleDistributedCoinsRequest) (*ModuleDistributedCoinsResponse, error)
-	// returns Gauge by id
+	// GaugeByID returns gauges by their respective ID
 	GaugeByID(context.Context, *GaugeByIDRequest) (*GaugeByIDResponse, error)
-	// returns gauges both upcoming and active
+	// Gauges returns both upcoming and active gauges
 	Gauges(context.Context, *GaugesRequest) (*GaugesResponse, error)
-	// returns active gauges
+	// ActiveGauges returns active gauges
 	ActiveGauges(context.Context, *ActiveGaugesRequest) (*ActiveGaugesResponse, error)
-	// returns active gauges per denom
+	// ActiveGaugesPerDenom returns active gauges by denom
 	ActiveGaugesPerDenom(context.Context, *ActiveGaugesPerDenomRequest) (*ActiveGaugesPerDenomResponse, error)
-	// returns scheduled gauges
+	// Returns scheduled gauges that have not yet occured
 	UpcomingGauges(context.Context, *UpcomingGaugesRequest) (*UpcomingGaugesResponse, error)
-	// returns scheduled gauges per denom
+	// UpcomingGaugesPerDenom returns scheduled gauges that have not yet occured
+	// by denom
 	UpcomingGaugesPerDenom(context.Context, *UpcomingGaugesPerDenomRequest) (*UpcomingGaugesPerDenomResponse, error)
-	// RewardsEst returns an estimate of the rewards at a future specific time.
-	// The querier either provides an address or a set of locks
-	// for which they want to find the associated rewards.
+	// RewardsEst returns an estimate of the rewards from now until a specified
+	// time in the future The querier either provides an address or a set of locks
+	// for which they want to find the associated rewards
 	RewardsEst(context.Context, *RewardsEstRequest) (*RewardsEstResponse, error)
-	// returns lockable durations that are valid to give incentives
+	// LockableDurations returns lockable durations that are valid to distribute
+	// incentives for
 	LockableDurations(context.Context, *QueryLockableDurationsRequest) (*QueryLockableDurationsResponse, error)
 }
 
@@ -1237,9 +1163,6 @@ type UnimplementedQueryServer struct {
 
 func (*UnimplementedQueryServer) ModuleToDistributeCoins(ctx context.Context, req *ModuleToDistributeCoinsRequest) (*ModuleToDistributeCoinsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ModuleToDistributeCoins not implemented")
-}
-func (*UnimplementedQueryServer) ModuleDistributedCoins(ctx context.Context, req *ModuleDistributedCoinsRequest) (*ModuleDistributedCoinsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ModuleDistributedCoins not implemented")
 }
 func (*UnimplementedQueryServer) GaugeByID(ctx context.Context, req *GaugeByIDRequest) (*GaugeByIDResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GaugeByID not implemented")
@@ -1284,24 +1207,6 @@ func _Query_ModuleToDistributeCoins_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).ModuleToDistributeCoins(ctx, req.(*ModuleToDistributeCoinsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_ModuleDistributedCoins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ModuleDistributedCoinsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).ModuleDistributedCoins(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/osmosis.incentives.Query/ModuleDistributedCoins",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).ModuleDistributedCoins(ctx, req.(*ModuleDistributedCoinsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1459,10 +1364,6 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ModuleToDistributeCoins_Handler,
 		},
 		{
-			MethodName: "ModuleDistributedCoins",
-			Handler:    _Query_ModuleDistributedCoins_Handler,
-		},
-		{
 			MethodName: "GaugeByID",
 			Handler:    _Query_GaugeByID_Handler,
 		},
@@ -1538,66 +1439,6 @@ func (m *ModuleToDistributeCoinsResponse) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *ModuleToDistributeCoinsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Coins) > 0 {
-		for iNdEx := len(m.Coins) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.Coins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintQuery(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0xa
-		}
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ModuleDistributedCoinsRequest) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ModuleDistributedCoinsRequest) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ModuleDistributedCoinsRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *ModuleDistributedCoinsResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ModuleDistributedCoinsResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ModuleDistributedCoinsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2299,30 +2140,6 @@ func (m *ModuleToDistributeCoinsResponse) Size() (n int) {
 	return n
 }
 
-func (m *ModuleDistributedCoinsRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *ModuleDistributedCoinsResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if len(m.Coins) > 0 {
-		for _, e := range m.Coins {
-			l = e.Size()
-			n += 1 + l + sovQuery(uint64(l))
-		}
-	}
-	return n
-}
-
 func (m *GaugeByIDRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2661,140 +2478,6 @@ func (m *ModuleToDistributeCoinsResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: ModuleToDistributeCoinsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Coins", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowQuery
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthQuery
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Coins = append(m.Coins, types.Coin{})
-			if err := m.Coins[len(m.Coins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ModuleDistributedCoinsRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ModuleDistributedCoinsRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ModuleDistributedCoinsRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipQuery(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthQuery
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ModuleDistributedCoinsResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowQuery
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ModuleDistributedCoinsResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ModuleDistributedCoinsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

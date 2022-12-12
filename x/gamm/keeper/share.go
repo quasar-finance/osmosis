@@ -3,10 +3,12 @@ package keeper
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/swaprouter/events"
+	swaproutertypes "github.com/osmosis-labs/osmosis/v13/x/swaprouter/types"
 )
 
-func (k Keeper) applyJoinPoolStateChange(ctx sdk.Context, pool types.PoolI, joiner sdk.AccAddress, numShares sdk.Int, joinCoins sdk.Coins) error {
+func (k Keeper) applyJoinPoolStateChange(ctx sdk.Context, pool swaproutertypes.PoolI, joiner sdk.AccAddress, numShares sdk.Int, joinCoins sdk.Coins) error {
 	err := k.bankKeeper.SendCoins(ctx, joiner, pool.GetAddress(), joinCoins)
 	if err != nil {
 		return err
@@ -17,18 +19,18 @@ func (k Keeper) applyJoinPoolStateChange(ctx sdk.Context, pool types.PoolI, join
 		return err
 	}
 
-	err = k.SetPool(ctx, pool)
+	err = k.setPool(ctx, pool)
 	if err != nil {
 		return err
 	}
 
-	ctx.EventManager().EmitEvent(types.CreateAddLiquidityEvent(ctx, joiner, pool.GetId(), joinCoins))
+	events.EmitAddLiquidityEvent(ctx, joiner, pool.GetId(), joinCoins)
 	k.hooks.AfterJoinPool(ctx, joiner, pool.GetId(), joinCoins, numShares)
 	k.RecordTotalLiquidityIncrease(ctx, joinCoins)
 	return nil
 }
 
-func (k Keeper) applyExitPoolStateChange(ctx sdk.Context, pool types.PoolI, exiter sdk.AccAddress, numShares sdk.Int, exitCoins sdk.Coins) error {
+func (k Keeper) applyExitPoolStateChange(ctx sdk.Context, pool swaproutertypes.PoolI, exiter sdk.AccAddress, numShares sdk.Int, exitCoins sdk.Coins) error {
 	err := k.bankKeeper.SendCoins(ctx, pool.GetAddress(), exiter, exitCoins)
 	if err != nil {
 		return err
@@ -39,12 +41,12 @@ func (k Keeper) applyExitPoolStateChange(ctx sdk.Context, pool types.PoolI, exit
 		return err
 	}
 
-	err = k.SetPool(ctx, pool)
+	err = k.setPool(ctx, pool)
 	if err != nil {
 		return err
 	}
 
-	ctx.EventManager().EmitEvent(types.CreateRemoveLiquidityEvent(ctx, exiter, pool.GetId(), exitCoins))
+	events.EmitRemoveLiquidityEvent(ctx, exiter, pool.GetId(), exitCoins)
 	k.hooks.AfterExitPool(ctx, exiter, pool.GetId(), numShares, exitCoins)
 	k.RecordTotalLiquidityDecrease(ctx, exitCoins)
 	return nil
@@ -53,7 +55,7 @@ func (k Keeper) applyExitPoolStateChange(ctx sdk.Context, pool types.PoolI, exit
 // MintPoolShareToAccount attempts to mint shares of a GAMM denomination to the
 // specified address returning an error upon failure. Shares are minted using
 // the x/gamm module account.
-func (k Keeper) MintPoolShareToAccount(ctx sdk.Context, pool types.PoolI, addr sdk.AccAddress, amount sdk.Int) error {
+func (k Keeper) MintPoolShareToAccount(ctx sdk.Context, pool swaproutertypes.PoolI, addr sdk.AccAddress, amount sdk.Int) error {
 	amt := sdk.NewCoins(sdk.NewCoin(types.GetPoolShareDenom(pool.GetId()), amount))
 
 	err := k.bankKeeper.MintCoins(ctx, types.ModuleName, amt)
@@ -70,7 +72,7 @@ func (k Keeper) MintPoolShareToAccount(ctx sdk.Context, pool types.PoolI, addr s
 }
 
 // BurnPoolShareFromAccount burns `amount` of the given pools shares held by `addr`.
-func (k Keeper) BurnPoolShareFromAccount(ctx sdk.Context, pool types.PoolI, addr sdk.AccAddress, amount sdk.Int) error {
+func (k Keeper) BurnPoolShareFromAccount(ctx sdk.Context, pool swaproutertypes.PoolI, addr sdk.AccAddress, amount sdk.Int) error {
 	amt := sdk.Coins{
 		sdk.NewCoin(types.GetPoolShareDenom(pool.GetId()), amount),
 	}

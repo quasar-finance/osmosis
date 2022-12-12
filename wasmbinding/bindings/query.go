@@ -52,6 +52,24 @@ type EstimateSwap struct {
 	Amount SwapAmount `json:"amount"`
 }
 
+type ArithmeticTwap struct {
+	PoolId          uint64 `json:"id"`
+	QuoteAssetDenom string `json:"quote_asset_denom"`
+	BaseAssetDenom  string `json:"base_asset_denom"`
+	// NOTE: StartTime is expected to be in Unix time milliseconds.
+	StartTime int64 `json:"start_time"`
+	// NOTE: EndTime is expected to be in Unix time milliseconds.
+	EndTime int64 `json:"end_time"`
+}
+
+type ArithmeticTwapToNow struct {
+	PoolId          uint64 `json:"id"`
+	QuoteAssetDenom string `json:"quote_asset_denom"`
+	BaseAssetDenom  string `json:"base_asset_denom"`
+	// NOTE: StartTime is expected to be in Unix time milliseconds.
+	StartTime int64 `json:"start_time"`
+}
+
 func (e *EstimateSwap) ToSwapMsg() *SwapMsg {
 	return &SwapMsg{
 		First:  e.First,

@@ -1,17 +1,20 @@
 package keeper
 
 import (
-	epochstypes "github.com/osmosis-labs/osmosis/v7/x/epochs/types"
-	"github.com/osmosis-labs/osmosis/v7/x/incentives/types"
-	lockuptypes "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
+	epochstypes "github.com/osmosis-labs/osmosis/v13/x/epochs/types"
+	"github.com/osmosis-labs/osmosis/v13/x/incentives/types"
+	lockuptypes "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (k Keeper) BeforeEpochStart(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
+// BeforeEpochStart is the epoch start hook.
+func (k Keeper) BeforeEpochStart(ctx sdk.Context, epochIdentifier string, epochNumber int64) error {
+	return nil
 }
 
-func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
+// AfterEpochEnd is the epoch end hook.
+func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) error {
 	params := k.GetParams(ctx)
 	if epochIdentifier == params.DistrEpochIdentifier {
 		// begin distribution if it's start time
@@ -19,18 +22,20 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 		for _, gauge := range gauges {
 			if !ctx.BlockTime().Before(gauge.StartTime) {
 				if err := k.moveUpcomingGaugeToActiveGauge(ctx, gauge); err != nil {
-					panic(err)
+					return err
 				}
 			}
 		}
 
+		if len(gauges) > 10 {
+			ctx.EventManager().IncreaseCapacity(2e6)
+		}
+
 		// distribute due to epoch event
-		ctx.EventManager().IncreaseCapacity(2e6)
 		gauges = k.GetActiveGauges(ctx)
 		// only distribute to active gauges that are for native denoms
 		// or non-perpetual and for synthetic denoms.
 		// We distribute to perpetual synthetic denoms elsewhere in superfluid.
-		// TODO: This method of doing is a bit of hack, should clean this up later.
 		distrGauges := []types.Gauge{}
 		for _, gauge := range gauges {
 			isSynthetic := lockuptypes.IsSyntheticDenom(gauge.DistributeTo.Denom)
@@ -40,30 +45,32 @@ func (k Keeper) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumb
 		}
 		_, err := k.Distribute(ctx, distrGauges)
 		if err != nil {
-			panic(err)
+			return err
 		}
 	}
+	return nil
 }
 
 // ___________________________________________________________________________________________________
 
-// Hooks wrapper struct for incentives keeper.
+// Hooks is the wrapper struct for the incentives keeper.
 type Hooks struct {
 	k Keeper
 }
 
 var _ epochstypes.EpochHooks = Hooks{}
 
-// Return the wrapper struct.
+// Hooks returns the hook wrapper struct.
 func (k Keeper) Hooks() Hooks {
 	return Hooks{k}
 }
 
-// epochs hooks.
-func (h Hooks) BeforeEpochStart(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
-	h.k.BeforeEpochStart(ctx, epochIdentifier, epochNumber)
+// BeforeEpochStart is the epoch start hook.
+func (h Hooks) BeforeEpochStart(ctx sdk.Context, epochIdentifier string, epochNumber int64) error {
+	return h.k.BeforeEpochStart(ctx, epochIdentifier, epochNumber)
 }
 
-func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) {
-	h.k.AfterEpochEnd(ctx, epochIdentifier, epochNumber)
+// AfterEpochEnd is the epoch end hook.
+func (h Hooks) AfterEpochEnd(ctx sdk.Context, epochIdentifier string, epochNumber int64) error {
+	return h.k.AfterEpochEnd(ctx, epochIdentifier, epochNumber)
 }

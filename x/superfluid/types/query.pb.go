@@ -9,11 +9,12 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	types "github.com/cosmos/cosmos-sdk/types"
 	query "github.com/cosmos/cosmos-sdk/types/query"
+	types2 "github.com/cosmos/cosmos-sdk/x/staking/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
 	_ "github.com/gogo/protobuf/types"
-	types1 "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
+	types1 "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -623,6 +624,148 @@ func (m *ConnectedIntermediaryAccountResponse) GetAccount() *SuperfluidIntermedi
 	return nil
 }
 
+type QueryTotalDelegationByValidatorForDenomRequest struct {
+	Denom string `protobuf:"bytes,1,opt,name=denom,proto3" json:"denom,omitempty"`
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) Reset() {
+	*m = QueryTotalDelegationByValidatorForDenomRequest{}
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryTotalDelegationByValidatorForDenomRequest) ProtoMessage() {}
+func (*QueryTotalDelegationByValidatorForDenomRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{13}
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalDelegationByValidatorForDenomRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDelegationByValidatorForDenomRequest.Merge(m, src)
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDelegationByValidatorForDenomRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalDelegationByValidatorForDenomRequest proto.InternalMessageInfo
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) GetDenom() string {
+	if m != nil {
+		return m.Denom
+	}
+	return ""
+}
+
+type QueryTotalDelegationByValidatorForDenomResponse struct {
+	Assets []Delegations `protobuf:"bytes,1,rep,name=assets,proto3" json:"assets"`
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) Reset() {
+	*m = QueryTotalDelegationByValidatorForDenomResponse{}
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryTotalDelegationByValidatorForDenomResponse) ProtoMessage() {}
+func (*QueryTotalDelegationByValidatorForDenomResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{14}
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalDelegationByValidatorForDenomResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDelegationByValidatorForDenomResponse.Merge(m, src)
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDelegationByValidatorForDenomResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalDelegationByValidatorForDenomResponse proto.InternalMessageInfo
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) GetAssets() []Delegations {
+	if m != nil {
+		return m.Assets
+	}
+	return nil
+}
+
+type Delegations struct {
+	ValAddr        string                                 `protobuf:"bytes,1,opt,name=val_addr,json=valAddr,proto3" json:"val_addr,omitempty"`
+	AmountSfsd     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=amount_sfsd,json=amountSfsd,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"amount_sfsd" yaml:"amount_sfsd"`
+	OsmoEquivalent github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=osmo_equivalent,json=osmoEquivalent,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"osmo_equivalent" yaml:"osmo_equivalent"`
+}
+
+func (m *Delegations) Reset()         { *m = Delegations{} }
+func (m *Delegations) String() string { return proto.CompactTextString(m) }
+func (*Delegations) ProtoMessage()    {}
+func (*Delegations) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{15}
+}
+func (m *Delegations) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Delegations) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Delegations.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Delegations) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Delegations.Merge(m, src)
+}
+func (m *Delegations) XXX_Size() int {
+	return m.Size()
+}
+func (m *Delegations) XXX_DiscardUnknown() {
+	xxx_messageInfo_Delegations.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Delegations proto.InternalMessageInfo
+
+func (m *Delegations) GetValAddr() string {
+	if m != nil {
+		return m.ValAddr
+	}
+	return ""
+}
+
 type TotalSuperfluidDelegationsRequest struct {
 }
 
@@ -630,7 +773,7 @@ func (m *TotalSuperfluidDelegationsRequest) Reset()         { *m = TotalSuperflu
 func (m *TotalSuperfluidDelegationsRequest) String() string { return proto.CompactTextString(m) }
 func (*TotalSuperfluidDelegationsRequest) ProtoMessage()    {}
 func (*TotalSuperfluidDelegationsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{13}
+	return fileDescriptor_e3d9448e4ed3943f, []int{16}
 }
 func (m *TotalSuperfluidDelegationsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -667,7 +810,7 @@ func (m *TotalSuperfluidDelegationsResponse) Reset()         { *m = TotalSuperfl
 func (m *TotalSuperfluidDelegationsResponse) String() string { return proto.CompactTextString(m) }
 func (*TotalSuperfluidDelegationsResponse) ProtoMessage()    {}
 func (*TotalSuperfluidDelegationsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{14}
+	return fileDescriptor_e3d9448e4ed3943f, []int{17}
 }
 func (m *TotalSuperfluidDelegationsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -706,7 +849,7 @@ func (m *SuperfluidDelegationAmountRequest) Reset()         { *m = SuperfluidDel
 func (m *SuperfluidDelegationAmountRequest) String() string { return proto.CompactTextString(m) }
 func (*SuperfluidDelegationAmountRequest) ProtoMessage()    {}
 func (*SuperfluidDelegationAmountRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{15}
+	return fileDescriptor_e3d9448e4ed3943f, []int{18}
 }
 func (m *SuperfluidDelegationAmountRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -764,7 +907,7 @@ func (m *SuperfluidDelegationAmountResponse) Reset()         { *m = SuperfluidDe
 func (m *SuperfluidDelegationAmountResponse) String() string { return proto.CompactTextString(m) }
 func (*SuperfluidDelegationAmountResponse) ProtoMessage()    {}
 func (*SuperfluidDelegationAmountResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{16}
+	return fileDescriptor_e3d9448e4ed3943f, []int{19}
 }
 func (m *SuperfluidDelegationAmountResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -810,7 +953,7 @@ func (m *SuperfluidDelegationsByDelegatorRequest) Reset() {
 func (m *SuperfluidDelegationsByDelegatorRequest) String() string { return proto.CompactTextString(m) }
 func (*SuperfluidDelegationsByDelegatorRequest) ProtoMessage()    {}
 func (*SuperfluidDelegationsByDelegatorRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{17}
+	return fileDescriptor_e3d9448e4ed3943f, []int{20}
 }
 func (m *SuperfluidDelegationsByDelegatorRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -858,7 +1001,7 @@ func (m *SuperfluidDelegationsByDelegatorResponse) Reset() {
 func (m *SuperfluidDelegationsByDelegatorResponse) String() string { return proto.CompactTextString(m) }
 func (*SuperfluidDelegationsByDelegatorResponse) ProtoMessage()    {}
 func (*SuperfluidDelegationsByDelegatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{18}
+	return fileDescriptor_e3d9448e4ed3943f, []int{21}
 }
 func (m *SuperfluidDelegationsByDelegatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -921,7 +1064,7 @@ func (m *SuperfluidUndelegationsByDelegatorRequest) String() string {
 }
 func (*SuperfluidUndelegationsByDelegatorRequest) ProtoMessage() {}
 func (*SuperfluidUndelegationsByDelegatorRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{19}
+	return fileDescriptor_e3d9448e4ed3943f, []int{22}
 }
 func (m *SuperfluidUndelegationsByDelegatorRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -978,7 +1121,7 @@ func (m *SuperfluidUndelegationsByDelegatorResponse) String() string {
 }
 func (*SuperfluidUndelegationsByDelegatorResponse) ProtoMessage() {}
 func (*SuperfluidUndelegationsByDelegatorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{20}
+	return fileDescriptor_e3d9448e4ed3943f, []int{23}
 }
 func (m *SuperfluidUndelegationsByDelegatorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1041,7 +1184,7 @@ func (m *SuperfluidDelegationsByValidatorDenomRequest) String() string {
 }
 func (*SuperfluidDelegationsByValidatorDenomRequest) ProtoMessage() {}
 func (*SuperfluidDelegationsByValidatorDenomRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{21}
+	return fileDescriptor_e3d9448e4ed3943f, []int{24}
 }
 func (m *SuperfluidDelegationsByValidatorDenomRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1096,7 +1239,7 @@ func (m *SuperfluidDelegationsByValidatorDenomResponse) String() string {
 }
 func (*SuperfluidDelegationsByValidatorDenomResponse) ProtoMessage() {}
 func (*SuperfluidDelegationsByValidatorDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{22}
+	return fileDescriptor_e3d9448e4ed3943f, []int{25}
 }
 func (m *SuperfluidDelegationsByValidatorDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1145,7 +1288,7 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) String() stri
 }
 func (*EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) ProtoMessage() {}
 func (*EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{23}
+	return fileDescriptor_e3d9448e4ed3943f, []int{26}
 }
 func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1200,7 +1343,7 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) String() str
 }
 func (*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) ProtoMessage() {}
 func (*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_e3d9448e4ed3943f, []int{24}
+	return fileDescriptor_e3d9448e4ed3943f, []int{27}
 }
 func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1236,6 +1379,202 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) GetTotalDele
 	return nil
 }
 
+type QueryTotalDelegationByDelegatorRequest struct {
+	DelegatorAddress string `protobuf:"bytes,1,opt,name=delegator_address,json=delegatorAddress,proto3" json:"delegator_address,omitempty"`
+}
+
+func (m *QueryTotalDelegationByDelegatorRequest) Reset() {
+	*m = QueryTotalDelegationByDelegatorRequest{}
+}
+func (m *QueryTotalDelegationByDelegatorRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalDelegationByDelegatorRequest) ProtoMessage()    {}
+func (*QueryTotalDelegationByDelegatorRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{28}
+}
+func (m *QueryTotalDelegationByDelegatorRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalDelegationByDelegatorRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalDelegationByDelegatorRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalDelegationByDelegatorRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDelegationByDelegatorRequest.Merge(m, src)
+}
+func (m *QueryTotalDelegationByDelegatorRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalDelegationByDelegatorRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDelegationByDelegatorRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalDelegationByDelegatorRequest proto.InternalMessageInfo
+
+func (m *QueryTotalDelegationByDelegatorRequest) GetDelegatorAddress() string {
+	if m != nil {
+		return m.DelegatorAddress
+	}
+	return ""
+}
+
+type QueryTotalDelegationByDelegatorResponse struct {
+	SuperfluidDelegationRecords []SuperfluidDelegationRecord             `protobuf:"bytes,1,rep,name=superfluid_delegation_records,json=superfluidDelegationRecords,proto3" json:"superfluid_delegation_records"`
+	DelegationResponse          []types2.DelegationResponse              `protobuf:"bytes,2,rep,name=delegation_response,json=delegationResponse,proto3" json:"delegation_response"`
+	TotalDelegatedCoins         github_com_cosmos_cosmos_sdk_types.Coins `protobuf:"bytes,3,rep,name=total_delegated_coins,json=totalDelegatedCoins,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coins" json:"total_delegated_coins"`
+	TotalEquivalentStakedAmount types.Coin                               `protobuf:"bytes,4,opt,name=total_equivalent_staked_amount,json=totalEquivalentStakedAmount,proto3,castrepeated=github.com/cosmos/cosmos-sdk/types.Coin" json:"total_equivalent_staked_amount"`
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) Reset() {
+	*m = QueryTotalDelegationByDelegatorResponse{}
+}
+func (m *QueryTotalDelegationByDelegatorResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryTotalDelegationByDelegatorResponse) ProtoMessage()    {}
+func (*QueryTotalDelegationByDelegatorResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{29}
+}
+func (m *QueryTotalDelegationByDelegatorResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryTotalDelegationByDelegatorResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryTotalDelegationByDelegatorResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryTotalDelegationByDelegatorResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryTotalDelegationByDelegatorResponse.Merge(m, src)
+}
+func (m *QueryTotalDelegationByDelegatorResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryTotalDelegationByDelegatorResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryTotalDelegationByDelegatorResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryTotalDelegationByDelegatorResponse proto.InternalMessageInfo
+
+func (m *QueryTotalDelegationByDelegatorResponse) GetSuperfluidDelegationRecords() []SuperfluidDelegationRecord {
+	if m != nil {
+		return m.SuperfluidDelegationRecords
+	}
+	return nil
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) GetDelegationResponse() []types2.DelegationResponse {
+	if m != nil {
+		return m.DelegationResponse
+	}
+	return nil
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) GetTotalDelegatedCoins() github_com_cosmos_cosmos_sdk_types.Coins {
+	if m != nil {
+		return m.TotalDelegatedCoins
+	}
+	return nil
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) GetTotalEquivalentStakedAmount() types.Coin {
+	if m != nil {
+		return m.TotalEquivalentStakedAmount
+	}
+	return types.Coin{}
+}
+
+type QueryUnpoolWhitelistRequest struct {
+}
+
+func (m *QueryUnpoolWhitelistRequest) Reset()         { *m = QueryUnpoolWhitelistRequest{} }
+func (m *QueryUnpoolWhitelistRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryUnpoolWhitelistRequest) ProtoMessage()    {}
+func (*QueryUnpoolWhitelistRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{30}
+}
+func (m *QueryUnpoolWhitelistRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUnpoolWhitelistRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUnpoolWhitelistRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUnpoolWhitelistRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUnpoolWhitelistRequest.Merge(m, src)
+}
+func (m *QueryUnpoolWhitelistRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUnpoolWhitelistRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUnpoolWhitelistRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUnpoolWhitelistRequest proto.InternalMessageInfo
+
+type QueryUnpoolWhitelistResponse struct {
+	PoolIds []uint64 `protobuf:"varint,1,rep,packed,name=pool_ids,json=poolIds,proto3" json:"pool_ids,omitempty"`
+}
+
+func (m *QueryUnpoolWhitelistResponse) Reset()         { *m = QueryUnpoolWhitelistResponse{} }
+func (m *QueryUnpoolWhitelistResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryUnpoolWhitelistResponse) ProtoMessage()    {}
+func (*QueryUnpoolWhitelistResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_e3d9448e4ed3943f, []int{31}
+}
+func (m *QueryUnpoolWhitelistResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryUnpoolWhitelistResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryUnpoolWhitelistResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryUnpoolWhitelistResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryUnpoolWhitelistResponse.Merge(m, src)
+}
+func (m *QueryUnpoolWhitelistResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryUnpoolWhitelistResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryUnpoolWhitelistResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryUnpoolWhitelistResponse proto.InternalMessageInfo
+
+func (m *QueryUnpoolWhitelistResponse) GetPoolIds() []uint64 {
+	if m != nil {
+		return m.PoolIds
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*QueryParamsRequest)(nil), "osmosis.superfluid.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "osmosis.superfluid.QueryParamsResponse")
@@ -1250,6 +1589,9 @@ func init() {
 	proto.RegisterType((*AllIntermediaryAccountsResponse)(nil), "osmosis.superfluid.AllIntermediaryAccountsResponse")
 	proto.RegisterType((*ConnectedIntermediaryAccountRequest)(nil), "osmosis.superfluid.ConnectedIntermediaryAccountRequest")
 	proto.RegisterType((*ConnectedIntermediaryAccountResponse)(nil), "osmosis.superfluid.ConnectedIntermediaryAccountResponse")
+	proto.RegisterType((*QueryTotalDelegationByValidatorForDenomRequest)(nil), "osmosis.superfluid.QueryTotalDelegationByValidatorForDenomRequest")
+	proto.RegisterType((*QueryTotalDelegationByValidatorForDenomResponse)(nil), "osmosis.superfluid.QueryTotalDelegationByValidatorForDenomResponse")
+	proto.RegisterType((*Delegations)(nil), "osmosis.superfluid.Delegations")
 	proto.RegisterType((*TotalSuperfluidDelegationsRequest)(nil), "osmosis.superfluid.TotalSuperfluidDelegationsRequest")
 	proto.RegisterType((*TotalSuperfluidDelegationsResponse)(nil), "osmosis.superfluid.TotalSuperfluidDelegationsResponse")
 	proto.RegisterType((*SuperfluidDelegationAmountRequest)(nil), "osmosis.superfluid.SuperfluidDelegationAmountRequest")
@@ -1262,110 +1604,133 @@ func init() {
 	proto.RegisterType((*SuperfluidDelegationsByValidatorDenomResponse)(nil), "osmosis.superfluid.SuperfluidDelegationsByValidatorDenomResponse")
 	proto.RegisterType((*EstimateSuperfluidDelegatedAmountByValidatorDenomRequest)(nil), "osmosis.superfluid.EstimateSuperfluidDelegatedAmountByValidatorDenomRequest")
 	proto.RegisterType((*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse)(nil), "osmosis.superfluid.EstimateSuperfluidDelegatedAmountByValidatorDenomResponse")
+	proto.RegisterType((*QueryTotalDelegationByDelegatorRequest)(nil), "osmosis.superfluid.QueryTotalDelegationByDelegatorRequest")
+	proto.RegisterType((*QueryTotalDelegationByDelegatorResponse)(nil), "osmosis.superfluid.QueryTotalDelegationByDelegatorResponse")
+	proto.RegisterType((*QueryUnpoolWhitelistRequest)(nil), "osmosis.superfluid.QueryUnpoolWhitelistRequest")
+	proto.RegisterType((*QueryUnpoolWhitelistResponse)(nil), "osmosis.superfluid.QueryUnpoolWhitelistResponse")
 }
 
 func init() { proto.RegisterFile("osmosis/superfluid/query.proto", fileDescriptor_e3d9448e4ed3943f) }
 
 var fileDescriptor_e3d9448e4ed3943f = []byte{
-	// 1555 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x58, 0xcd, 0x6f, 0xd4, 0x46,
-	0x1b, 0xcf, 0x24, 0x90, 0xc0, 0x83, 0x04, 0xc9, 0xc0, 0xfb, 0xb2, 0x18, 0xd8, 0x80, 0x03, 0xc9,
-	0x36, 0x80, 0x5d, 0x42, 0x03, 0x29, 0x2d, 0x88, 0x0d, 0x01, 0x1a, 0x29, 0x34, 0x74, 0x21, 0x41,
-	0xea, 0x87, 0x2c, 0xef, 0x7a, 0x58, 0xac, 0x78, 0xed, 0xcd, 0x8e, 0x9d, 0xb2, 0x42, 0xa8, 0x12,
-	0x55, 0xa5, 0xa2, 0x1e, 0x5a, 0x89, 0x7f, 0xa0, 0x57, 0x7a, 0xa8, 0x7a, 0xeb, 0xa5, 0x97, 0xaa,
-	0x17, 0xa4, 0xaa, 0x12, 0x52, 0x2f, 0x55, 0x0f, 0x50, 0x41, 0xaf, 0xbd, 0xf4, 0xd8, 0x5e, 0x2a,
-	0xcf, 0x8c, 0x3f, 0x36, 0x6b, 0x7b, 0x77, 0x53, 0x0a, 0xa7, 0xb5, 0xe7, 0xf9, 0xfc, 0x3d, 0x1f,
-	0xe3, 0xe7, 0x59, 0xc8, 0x3b, 0xb4, 0xe6, 0x50, 0x93, 0xaa, 0xd4, 0xab, 0x93, 0xc6, 0x0d, 0xcb,
-	0x33, 0x0d, 0x75, 0xd5, 0x23, 0x8d, 0xa6, 0x52, 0x6f, 0x38, 0xae, 0x83, 0xb1, 0xa0, 0x2b, 0x11,
-	0x5d, 0xda, 0x55, 0x75, 0xaa, 0x0e, 0x23, 0xab, 0xfe, 0x13, 0xe7, 0x94, 0xf2, 0x15, 0xc6, 0xaa,
-	0x96, 0x75, 0x4a, 0xd4, 0xb5, 0xe3, 0x65, 0xe2, 0xea, 0xc7, 0xd5, 0x8a, 0x63, 0xda, 0x82, 0xbe,
-	0xaf, 0xea, 0x38, 0x55, 0x8b, 0xa8, 0x7a, 0xdd, 0x54, 0x75, 0xdb, 0x76, 0x5c, 0xdd, 0x35, 0x1d,
-	0x9b, 0x0a, 0xea, 0xa8, 0xa0, 0xb2, 0xb7, 0xb2, 0x77, 0x43, 0x75, 0xcd, 0x1a, 0xa1, 0xae, 0x5e,
-	0xab, 0x07, 0xea, 0xd7, 0x33, 0x18, 0x5e, 0x83, 0x69, 0x10, 0xf4, 0xb1, 0x04, 0x20, 0xd1, 0x63,
-	0x60, 0x25, 0x81, 0xa9, 0xae, 0x37, 0xf4, 0x5a, 0xe0, 0xc6, 0x9e, 0x80, 0xc1, 0x72, 0x2a, 0x2b,
-	0x5e, 0x9d, 0xfd, 0x08, 0xd2, 0x64, 0x1c, 0x1f, 0x0b, 0x51, 0x88, 0xb2, 0xae, 0x57, 0x4d, 0x3b,
-	0xe6, 0x8c, 0xbc, 0x0b, 0xf0, 0x3b, 0x3e, 0xc7, 0x15, 0xa6, 0xbb, 0x44, 0x56, 0x3d, 0x42, 0x5d,
-	0x79, 0x11, 0x76, 0xb6, 0x9c, 0xd2, 0xba, 0x63, 0x53, 0x82, 0x67, 0x60, 0x90, 0xfb, 0x90, 0x43,
-	0x07, 0x50, 0x61, 0xdb, 0x94, 0xa4, 0xb4, 0xc7, 0x5c, 0xe1, 0x32, 0xb3, 0x9b, 0x1e, 0x3e, 0x1e,
-	0xed, 0x2b, 0x09, 0x7e, 0xb9, 0x00, 0xc3, 0x45, 0x4a, 0x89, 0x7b, 0xad, 0x59, 0x27, 0xc2, 0x08,
-	0xde, 0x05, 0x9b, 0x0d, 0x62, 0x3b, 0x35, 0xa6, 0x6c, 0x6b, 0x89, 0xbf, 0xc8, 0xef, 0xc1, 0x48,
-	0x8c, 0x53, 0x18, 0xbe, 0x08, 0xa0, 0xfb, 0x87, 0x9a, 0xdb, 0xac, 0x13, 0xc6, 0xbf, 0x7d, 0x6a,
-	0x22, 0xc9, 0xf8, 0xd5, 0xf0, 0x31, 0x52, 0xb2, 0x55, 0x0f, 0x1e, 0x65, 0x0c, 0xc3, 0x45, 0xcb,
-	0x62, 0xa4, 0x10, 0xeb, 0x32, 0x8c, 0xc4, 0xce, 0x84, 0xc1, 0x22, 0x0c, 0x32, 0x29, 0x1f, 0xe9,
-	0x40, 0x61, 0xdb, 0xd4, 0x58, 0x17, 0xc6, 0x02, 0xc8, 0x5c, 0x50, 0x56, 0xe0, 0xff, 0xec, 0xf8,
-	0xb2, 0x67, 0xb9, 0x66, 0xdd, 0x32, 0x49, 0x23, 0x1b, 0xf8, 0x67, 0x08, 0x76, 0xb7, 0x09, 0x08,
-	0x77, 0xea, 0x20, 0xf9, 0xf6, 0x35, 0xb2, 0xea, 0x99, 0x6b, 0xba, 0x45, 0x6c, 0x57, 0xab, 0x85,
-	0x5c, 0x22, 0x19, 0x53, 0x49, 0x2e, 0x2e, 0xd2, 0x9a, 0x73, 0x21, 0x14, 0x8a, 0x6b, 0xae, 0x38,
-	0x0d, 0xa3, 0x94, 0x73, 0x52, 0xe8, 0xf2, 0x3d, 0x04, 0x07, 0x23, 0x7c, 0xf3, 0xb6, 0x4b, 0x1a,
-	0x35, 0x62, 0x98, 0x7a, 0xa3, 0x59, 0xac, 0x54, 0x1c, 0xcf, 0x76, 0xe7, 0xed, 0x1b, 0x4e, 0x32,
-	0x12, 0xbc, 0x07, 0xb6, 0xac, 0xe9, 0x96, 0xa6, 0x1b, 0x46, 0x23, 0xd7, 0xcf, 0x08, 0x43, 0x6b,
-	0xba, 0x55, 0x34, 0x8c, 0x86, 0x4f, 0xaa, 0xea, 0x5e, 0x95, 0x68, 0xa6, 0x91, 0x1b, 0x38, 0x80,
-	0x0a, 0x9b, 0x4a, 0x43, 0xec, 0x7d, 0xde, 0xc0, 0x39, 0x18, 0xf2, 0x25, 0x08, 0xa5, 0xb9, 0x4d,
-	0x5c, 0x48, 0xbc, 0xca, 0x37, 0x21, 0x5f, 0xb4, 0xac, 0x04, 0x1f, 0x82, 0x1c, 0xfa, 0xf5, 0x11,
-	0x55, 0xb6, 0x88, 0xc7, 0xb8, 0xc2, 0xdb, 0x40, 0xf1, 0xdb, 0x40, 0xe1, 0x37, 0x85, 0x68, 0x03,
-	0xe5, 0x8a, 0x5e, 0x0d, 0xca, 0xb0, 0x14, 0x93, 0x94, 0x7f, 0x40, 0x30, 0x9a, 0x6a, 0x4a, 0xe4,
-	0xe2, 0x3a, 0x6c, 0xd1, 0xc5, 0x99, 0x28, 0x8e, 0xe9, 0xec, 0xe2, 0x48, 0x09, 0x9e, 0x28, 0x97,
-	0x50, 0x19, 0xbe, 0xd4, 0x02, 0xa2, 0x9f, 0x81, 0x98, 0xe8, 0x08, 0x82, 0x7b, 0xd5, 0x82, 0xe2,
-	0x2c, 0x8c, 0x9d, 0x77, 0x6c, 0x9b, 0x54, 0x5c, 0x92, 0x64, 0x3c, 0x08, 0xda, 0x6e, 0x18, 0xf2,
-	0x2f, 0x0d, 0x3f, 0x15, 0x88, 0xa5, 0x62, 0xd0, 0x7f, 0x9d, 0x37, 0xe4, 0x0f, 0xe1, 0x50, 0xb6,
-	0xbc, 0x88, 0xc4, 0x22, 0x0c, 0x09, 0xe7, 0x45, 0xc8, 0x37, 0x16, 0x88, 0x52, 0xa0, 0x45, 0x1e,
-	0x83, 0x83, 0xd7, 0x1c, 0x57, 0xb7, 0x22, 0x91, 0x39, 0x62, 0x91, 0x2a, 0xbf, 0x7e, 0x83, 0x7e,
-	0x7d, 0x80, 0x40, 0xce, 0xe2, 0x12, 0xce, 0xdd, 0x45, 0x30, 0xe2, 0xfa, 0x6c, 0x9a, 0x11, 0x51,
-	0x79, 0x9d, 0xce, 0x2e, 0xf9, 0x91, 0xff, 0xf5, 0xf1, 0xe8, 0x78, 0xd5, 0x74, 0x6f, 0x7a, 0x65,
-	0xa5, 0xe2, 0xd4, 0x54, 0x71, 0x67, 0xf2, 0x9f, 0x63, 0xd4, 0x58, 0x51, 0xfd, 0xbb, 0x86, 0x2a,
-	0xf3, 0xb6, 0xfb, 0xe7, 0xe3, 0xd1, 0xb1, 0xa6, 0x5e, 0xb3, 0x4e, 0xcb, 0x5c, 0x61, 0x04, 0x2e,
-	0xae, 0x5b, 0x2e, 0x0d, 0x33, 0x72, 0xcc, 0x19, 0xf9, 0x7e, 0x4b, 0x17, 0x45, 0x94, 0x62, 0x2d,
-	0x9e, 0x88, 0x23, 0x30, 0x22, 0xf4, 0x38, 0x0d, 0x2d, 0xe8, 0x01, 0xde, 0x51, 0xc3, 0x21, 0xa1,
-	0xc8, 0xcf, 0x7d, 0xe6, 0x35, 0xdd, 0x32, 0x8d, 0x16, 0x66, 0xde, 0x65, 0xc3, 0x21, 0x21, 0x60,
-	0x0e, 0xfb, 0x73, 0x20, 0x7e, 0xd3, 0xdc, 0x43, 0x20, 0x67, 0x79, 0x25, 0x22, 0x58, 0x81, 0x41,
-	0xbd, 0x26, 0xb2, 0xeb, 0x97, 0xf9, 0x9e, 0x96, 0x5a, 0x0c, 0xaa, 0xf0, 0xbc, 0x63, 0xda, 0xb3,
-	0xaf, 0xfa, 0x01, 0xfd, 0xea, 0xc9, 0x68, 0xa1, 0x8b, 0x80, 0xfa, 0x02, 0xb4, 0x24, 0x54, 0xcb,
-	0xcb, 0x30, 0x91, 0x98, 0xc7, 0xd9, 0xe6, 0x5c, 0x80, 0x7c, 0x23, 0x61, 0x92, 0xbf, 0x1d, 0x80,
-	0x42, 0x67, 0xc5, 0x02, 0xe9, 0x2d, 0xd8, 0x9f, 0x98, 0x53, 0xad, 0xc1, 0xae, 0xc9, 0xa0, 0xcf,
-	0x95, 0xec, 0xf2, 0x8e, 0x8c, 0xf0, 0xdb, 0x55, 0x34, 0xf8, 0x5e, 0x9a, 0xca, 0x41, 0xf1, 0x47,
-	0xf0, 0xbf, 0x96, 0x22, 0x25, 0x86, 0xe6, 0x0f, 0x22, 0x7e, 0x46, 0x9f, 0x7b, 0xc8, 0x77, 0xc6,
-	0xcb, 0x93, 0x18, 0xec, 0x10, 0x7f, 0x8e, 0x20, 0xcf, 0x3d, 0x88, 0x7d, 0x5b, 0xa8, 0xab, 0xaf,
-	0x10, 0x43, 0x13, 0xd9, 0x1f, 0x60, 0xbd, 0x9d, 0xe1, 0x8a, 0x2a, 0x5c, 0x99, 0xe8, 0xd2, 0x95,
-	0xd2, 0x5e, 0x66, 0x31, 0xfa, 0xee, 0x5c, 0x65, 0xf6, 0x78, 0xf9, 0xc9, 0x36, 0xbc, 0x12, 0xc5,
-	0x74, 0xc9, 0x36, 0x9e, 0x5b, 0x4d, 0x44, 0xdd, 0xd0, 0x1f, 0xef, 0x86, 0xbf, 0xfa, 0x61, 0xb2,
-	0x1b, 0x83, 0x2f, 0xbd, 0x56, 0x3e, 0x46, 0xb0, 0x9b, 0xa7, 0xca, 0xb3, 0x5f, 0x40, 0xb9, 0xf0,
-	0xc2, 0x5c, 0x8a, 0x4c, 0xf1, 0x82, 0x59, 0x80, 0x1d, 0xb4, 0x69, 0xbb, 0x37, 0x89, 0x6b, 0x56,
-	0x34, 0xff, 0x83, 0x41, 0x73, 0x03, 0xcc, 0xf8, 0xfe, 0x10, 0x31, 0x9f, 0x48, 0x95, 0xab, 0x01,
-	0xdb, 0x82, 0x53, 0x59, 0x11, 0x00, 0xb7, 0xd3, 0xf8, 0x21, 0x95, 0x57, 0xe1, 0x68, 0x4a, 0x97,
-	0x2e, 0x07, 0x77, 0xd9, 0x9c, 0x9f, 0xa5, 0x58, 0xbe, 0xdb, 0x6f, 0x3f, 0xd4, 0xe9, 0xf6, 0x6b,
-	0xc9, 0xf7, 0x03, 0x04, 0xc7, 0xba, 0xb4, 0xf9, 0xb2, 0x53, 0x2e, 0xdf, 0x81, 0x99, 0x0b, 0xd4,
-	0x35, 0x6b, 0xba, 0x4b, 0xda, 0x14, 0x05, 0x0d, 0xf3, 0x1f, 0x86, 0xea, 0x3b, 0x04, 0xaf, 0x6f,
-	0xc0, 0xbe, 0x08, 0x5b, 0xea, 0xdd, 0x86, 0x5e, 0xcc, 0xdd, 0x36, 0xf5, 0xcd, 0x4e, 0xd8, 0xcc,
-	0xd6, 0x18, 0xfc, 0x09, 0x82, 0x41, 0xbe, 0x97, 0xe0, 0xf1, 0xa4, 0x2c, 0xb5, 0xaf, 0x40, 0xd2,
-	0x44, 0x47, 0x3e, 0x0e, 0x53, 0x9e, 0xbc, 0xfb, 0xf3, 0xef, 0xf7, 0xfb, 0x0f, 0x61, 0x59, 0x4d,
-	0x58, 0xd9, 0xa2, 0xbd, 0x8b, 0x19, 0xff, 0x14, 0xc1, 0xd6, 0x70, 0x31, 0xc1, 0x87, 0x92, 0x4c,
-	0xac, 0x5f, 0x93, 0xa4, 0xc3, 0x1d, 0xb8, 0x84, 0x1b, 0x0a, 0x73, 0xa3, 0x80, 0xc7, 0xb3, 0xdc,
-	0x88, 0x96, 0x28, 0xee, 0x4a, 0xb0, 0xf7, 0xa4, 0xb8, 0xb2, 0x6e, 0x55, 0x4a, 0x71, 0x65, 0xfd,
-	0xf2, 0xd4, 0xa5, 0x2b, 0x96, 0xa5, 0xf1, 0x4d, 0x09, 0x7f, 0x89, 0x60, 0xc7, 0xba, 0xcd, 0x07,
-	0x4f, 0xa6, 0xa2, 0x6e, 0xdb, 0xa7, 0xa4, 0x23, 0x5d, 0xf1, 0x0a, 0xe7, 0x5e, 0x63, 0xce, 0x29,
-	0xf8, 0x68, 0xe7, 0x38, 0x45, 0x2b, 0x16, 0xfe, 0xde, 0x5f, 0xce, 0x92, 0x17, 0x03, 0x3c, 0x95,
-	0x12, 0x95, 0x8c, 0x85, 0x45, 0x3a, 0xd1, 0x93, 0x8c, 0x70, 0xfd, 0x0c, 0x73, 0xfd, 0x14, 0x9e,
-	0xee, 0x14, 0x57, 0x33, 0xa6, 0x45, 0x0b, 0xf7, 0x8b, 0x27, 0x08, 0xf6, 0x65, 0xcd, 0xf5, 0xf8,
-	0x54, 0x92, 0x53, 0x5d, 0x6c, 0x12, 0xd2, 0x4c, 0xef, 0x82, 0x02, 0xd2, 0x02, 0x83, 0x74, 0x11,
-	0xcf, 0x65, 0x41, 0xaa, 0x04, 0x9a, 0x12, 0x81, 0xa9, 0xb7, 0xc5, 0x16, 0x73, 0x07, 0xff, 0x88,
-	0x40, 0x4a, 0x5f, 0x0d, 0x70, 0xe2, 0x7a, 0xd2, 0x71, 0xe1, 0x90, 0x4e, 0xf6, 0x2a, 0x26, 0xb0,
-	0x9d, 0x65, 0xd8, 0x66, 0xf0, 0xc9, 0x4e, 0xe9, 0x4a, 0xde, 0x27, 0xf0, 0x4f, 0x08, 0xa4, 0xf4,
-	0x31, 0x1d, 0x4f, 0x77, 0xfb, 0xb9, 0x69, 0x59, 0x36, 0x92, 0xd1, 0x74, 0xde, 0x06, 0xe4, 0x73,
-	0x0c, 0xcd, 0x69, 0x3c, 0x93, 0x85, 0x26, 0xf9, 0x33, 0xc9, 0xe7, 0x48, 0xfc, 0x07, 0x82, 0x03,
-	0x9d, 0x46, 0x72, 0xfc, 0x46, 0xb7, 0xee, 0x25, 0x4c, 0x83, 0xd2, 0x9b, 0x1b, 0x13, 0x16, 0x08,
-	0xdf, 0x66, 0x08, 0xdf, 0xc2, 0x17, 0x7b, 0x46, 0x48, 0xd5, 0xdb, 0x6d, 0x53, 0xe8, 0x1d, 0x7c,
-	0xb7, 0x3f, 0xbe, 0x66, 0xa5, 0x0d, 0x96, 0xf8, 0x4c, 0xb6, 0xd3, 0x1d, 0x26, 0x60, 0xe9, 0xec,
-	0x46, 0xc5, 0x05, 0xea, 0x0f, 0x18, 0xea, 0xeb, 0x78, 0xa9, 0x4b, 0xd4, 0x5e, 0x5c, 0xa1, 0x56,
-	0x6e, 0x6a, 0x21, 0xf2, 0xc4, 0x20, 0xfc, 0x8d, 0xe0, 0x70, 0x57, 0xd3, 0x16, 0x3e, 0xd7, 0x43,
-	0xf2, 0x12, 0x27, 0x1e, 0xa9, 0xf8, 0x2f, 0x34, 0x88, 0x68, 0x5c, 0x66, 0xd1, 0xb8, 0x84, 0x2f,
-	0xf4, 0x5e, 0x03, 0x7e, 0x2c, 0xa2, 0x81, 0x8b, 0xff, 0x13, 0xf6, 0x75, 0x3f, 0x1c, 0xef, 0x79,
-	0x80, 0xc2, 0x0b, 0x49, 0x38, 0x36, 0x3a, 0x07, 0x4a, 0x97, 0x9f, 0x93, 0x36, 0x11, 0xa1, 0xf7,
-	0x59, 0x84, 0x96, 0xf1, 0xb5, 0xac, 0x08, 0x11, 0xa1, 0x5e, 0xcb, 0xba, 0x10, 0x12, 0x02, 0x36,
-	0xbb, 0xf8, 0xf0, 0x69, 0x1e, 0x3d, 0x7a, 0x9a, 0x47, 0xbf, 0x3d, 0xcd, 0xa3, 0x2f, 0x9e, 0xe5,
-	0xfb, 0x1e, 0x3d, 0xcb, 0xf7, 0xfd, 0xf2, 0x2c, 0xdf, 0xf7, 0xee, 0x74, 0x6c, 0x16, 0x14, 0x96,
-	0x8f, 0x59, 0x7a, 0x99, 0x86, 0x6e, 0xac, 0x9d, 0x52, 0x6f, 0xc5, 0x7d, 0x61, 0xe3, 0x61, 0x79,
-	0x90, 0xfd, 0xcd, 0x7d, 0xe2, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xfd, 0x21, 0x0e, 0xbf, 0x3e,
-	0x18, 0x00, 0x00,
+	// 1858 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x59, 0x4b, 0x6c, 0xd4, 0xdc,
+	0x15, 0x8e, 0x27, 0xf9, 0x13, 0x72, 0x22, 0x91, 0xe4, 0x42, 0xff, 0x24, 0x06, 0x26, 0xfc, 0x4e,
+	0x48, 0xd2, 0x00, 0x36, 0x09, 0x05, 0x02, 0x14, 0xc4, 0x0c, 0x21, 0x10, 0x29, 0x69, 0xe8, 0x84,
+	0x04, 0xa9, 0x0f, 0x59, 0xce, 0xf8, 0x66, 0x62, 0xc5, 0x63, 0x4f, 0xe6, 0x7a, 0x02, 0x23, 0x84,
+	0x2a, 0xa5, 0xaa, 0x54, 0xd4, 0x45, 0x2b, 0xb1, 0xea, 0xae, 0x5b, 0x58, 0xb4, 0xcb, 0x6e, 0xba,
+	0xa9, 0xba, 0x41, 0xaa, 0x2a, 0x21, 0x75, 0x53, 0x75, 0x01, 0x15, 0x74, 0xd9, 0x6e, 0xba, 0x6c,
+	0xa5, 0xaa, 0xf2, 0xbd, 0xd7, 0x8f, 0x99, 0xb1, 0x3d, 0x9e, 0x40, 0xe1, 0x5f, 0x65, 0xec, 0x7b,
+	0x5e, 0xdf, 0x79, 0x5d, 0x9f, 0x13, 0xc8, 0xda, 0xa4, 0x6c, 0x13, 0x83, 0x28, 0xa4, 0x56, 0xc1,
+	0xd5, 0x6d, 0xb3, 0x66, 0xe8, 0xca, 0x5e, 0x0d, 0x57, 0xeb, 0x72, 0xa5, 0x6a, 0x3b, 0x36, 0x42,
+	0xfc, 0x5c, 0x0e, 0xce, 0xc5, 0xe3, 0x25, 0xbb, 0x64, 0xd3, 0x63, 0xc5, 0xfd, 0xc5, 0x28, 0xc5,
+	0x6c, 0x91, 0x92, 0x2a, 0x5b, 0x1a, 0xc1, 0xca, 0xfe, 0xdc, 0x16, 0x76, 0xb4, 0x39, 0xa5, 0x68,
+	0x1b, 0x16, 0x3f, 0x3f, 0x59, 0xb2, 0xed, 0x92, 0x89, 0x15, 0xad, 0x62, 0x28, 0x9a, 0x65, 0xd9,
+	0x8e, 0xe6, 0x18, 0xb6, 0x45, 0xf8, 0xe9, 0x38, 0x3f, 0xa5, 0x4f, 0x5b, 0xb5, 0x6d, 0xc5, 0x31,
+	0xca, 0x98, 0x38, 0x5a, 0xb9, 0xe2, 0x89, 0x6f, 0x26, 0xd0, 0x6b, 0x55, 0x2a, 0x81, 0x9f, 0x4f,
+	0x44, 0x00, 0x09, 0x7e, 0x7a, 0x5a, 0x22, 0x88, 0x2a, 0x5a, 0x55, 0x2b, 0x7b, 0x66, 0x8c, 0x79,
+	0x04, 0xa6, 0x5d, 0xdc, 0xad, 0x55, 0xe8, 0x1f, 0x7e, 0x34, 0x1b, 0xc6, 0x47, 0x5d, 0xe4, 0xa3,
+	0xac, 0x68, 0x25, 0xc3, 0x0a, 0x1b, 0x33, 0xc9, 0x69, 0x89, 0xa3, 0xed, 0x1a, 0x56, 0xc9, 0x27,
+	0xe4, 0xcf, 0x8c, 0x4a, 0x3a, 0x0e, 0xe8, 0xbb, 0xae, 0x9c, 0xfb, 0xd4, 0x82, 0x02, 0xde, 0xab,
+	0x61, 0xe2, 0x48, 0x6b, 0x70, 0xac, 0xe1, 0x2d, 0xa9, 0xd8, 0x16, 0xc1, 0x68, 0x01, 0x7a, 0x99,
+	0xa5, 0xa3, 0xc2, 0x69, 0x61, 0x66, 0x60, 0x5e, 0x94, 0x5b, 0x23, 0x23, 0x33, 0x9e, 0x7c, 0xcf,
+	0xab, 0x37, 0xe3, 0x5d, 0x05, 0x4e, 0x2f, 0xcd, 0xc0, 0x50, 0x8e, 0x10, 0xec, 0x3c, 0xa8, 0x57,
+	0x30, 0x57, 0x82, 0x8e, 0xc3, 0x17, 0x3a, 0xb6, 0xec, 0x32, 0x15, 0xd6, 0x5f, 0x60, 0x0f, 0xd2,
+	0xf7, 0x61, 0x38, 0x44, 0xc9, 0x15, 0x2f, 0x01, 0x68, 0xee, 0x4b, 0xd5, 0xa9, 0x57, 0x30, 0xa5,
+	0x3f, 0x3a, 0x3f, 0x1d, 0xa5, 0x7c, 0xdd, 0xff, 0x19, 0x08, 0xe9, 0xd7, 0xbc, 0x9f, 0x12, 0x82,
+	0xa1, 0x9c, 0x69, 0xd2, 0x23, 0x1f, 0xeb, 0x26, 0x0c, 0x87, 0xde, 0x71, 0x85, 0x39, 0xe8, 0xa5,
+	0x5c, 0x2e, 0xd2, 0xee, 0x99, 0x81, 0xf9, 0x89, 0x14, 0xca, 0x3c, 0xc8, 0x8c, 0x51, 0x92, 0xe1,
+	0x4b, 0xfa, 0x7a, 0xb5, 0x66, 0x3a, 0x46, 0xc5, 0x34, 0x70, 0x35, 0x19, 0xf8, 0xcf, 0x04, 0x18,
+	0x69, 0x61, 0xe0, 0xe6, 0x54, 0x40, 0x74, 0xf5, 0xab, 0x78, 0xaf, 0x66, 0xec, 0x6b, 0x26, 0xb6,
+	0x1c, 0xb5, 0xec, 0x53, 0xf1, 0x60, 0xcc, 0x47, 0x99, 0xb8, 0x46, 0xca, 0xf6, 0x1d, 0x9f, 0x29,
+	0x2c, 0xb9, 0x68, 0x57, 0xf5, 0xc2, 0xa8, 0x1d, 0x73, 0x2e, 0x3d, 0x13, 0xe0, 0xab, 0x00, 0xdf,
+	0xb2, 0xe5, 0xe0, 0x6a, 0x19, 0xeb, 0x86, 0x56, 0xad, 0xe7, 0x8a, 0x45, 0xbb, 0x66, 0x39, 0xcb,
+	0xd6, 0xb6, 0x1d, 0x8d, 0x04, 0x8d, 0xc1, 0x91, 0x7d, 0xcd, 0x54, 0x35, 0x5d, 0xaf, 0x8e, 0x66,
+	0xe8, 0x41, 0xdf, 0xbe, 0x66, 0xe6, 0x74, 0xbd, 0xea, 0x1e, 0x95, 0xb4, 0x5a, 0x09, 0xab, 0x86,
+	0x3e, 0xda, 0x7d, 0x5a, 0x98, 0xe9, 0x29, 0xf4, 0xd1, 0xe7, 0x65, 0x1d, 0x8d, 0x42, 0x9f, 0xcb,
+	0x81, 0x09, 0x19, 0xed, 0x61, 0x4c, 0xfc, 0x51, 0xda, 0x81, 0x6c, 0xce, 0x34, 0x23, 0x6c, 0xf0,
+	0x62, 0xe8, 0xe6, 0x47, 0x90, 0xff, 0xdc, 0x1f, 0x53, 0x32, 0x2b, 0x00, 0xd9, 0x2d, 0x16, 0x99,
+	0xf5, 0x13, 0x5e, 0x03, 0xf2, 0x7d, 0xad, 0xe4, 0xa5, 0x61, 0x21, 0xc4, 0x29, 0xfd, 0x41, 0x80,
+	0xf1, 0x58, 0x55, 0x3c, 0x16, 0x0f, 0xe1, 0x88, 0xc6, 0xdf, 0xf1, 0xe4, 0xb8, 0x94, 0x9c, 0x1c,
+	0x31, 0xce, 0xe3, 0xe9, 0xe2, 0x0b, 0x43, 0x77, 0x1b, 0x40, 0x64, 0x28, 0x88, 0xe9, 0xb6, 0x20,
+	0x98, 0x55, 0x0d, 0x28, 0x6e, 0xc2, 0xc4, 0x6d, 0xdb, 0xb2, 0x70, 0xd1, 0xc1, 0x51, 0xca, 0x3d,
+	0xa7, 0x8d, 0x40, 0x9f, 0xdb, 0x5a, 0xdc, 0x50, 0x08, 0x34, 0x14, 0xbd, 0xee, 0xe3, 0xb2, 0x2e,
+	0x3d, 0x82, 0xc9, 0x64, 0x7e, 0xee, 0x89, 0x35, 0xe8, 0xe3, 0xc6, 0x73, 0x97, 0x1f, 0xce, 0x11,
+	0x05, 0x4f, 0x8a, 0xb4, 0x04, 0x32, 0x6d, 0x3b, 0x0f, 0x6c, 0x47, 0x33, 0x17, 0xb1, 0x89, 0x4b,
+	0x14, 0x50, 0xbe, 0xbe, 0xa9, 0x99, 0x86, 0xae, 0x39, 0x76, 0x75, 0xc9, 0xae, 0x2e, 0xba, 0x39,
+	0x96, 0x5c, 0x4a, 0x15, 0x50, 0x52, 0xcb, 0xe1, 0x58, 0x6e, 0x34, 0x15, 0xfc, 0x78, 0x14, 0x94,
+	0x40, 0x14, 0x69, 0x2a, 0xf6, 0x83, 0x0c, 0x0c, 0x84, 0x4e, 0x1b, 0x4a, 0x40, 0x68, 0x2c, 0x01,
+	0x0c, 0x03, 0x5a, 0xd9, 0x85, 0xab, 0x92, 0x6d, 0xa2, 0xb3, 0x02, 0xc9, 0x2f, 0xba, 0xd2, 0xfe,
+	0xfa, 0x66, 0x7c, 0xaa, 0x64, 0x38, 0x3b, 0xb5, 0x2d, 0xb9, 0x68, 0x97, 0x15, 0xde, 0xbf, 0xd9,
+	0x9f, 0xf3, 0x44, 0xdf, 0x55, 0xdc, 0xee, 0x47, 0xe4, 0x65, 0xcb, 0xf9, 0xd7, 0x9b, 0x71, 0x54,
+	0xd7, 0xca, 0xe6, 0x35, 0x29, 0x24, 0x4a, 0x2a, 0x00, 0x7b, 0x5a, 0xdf, 0x26, 0x3a, 0xda, 0x83,
+	0xc1, 0xa6, 0x96, 0x41, 0x0b, 0xae, 0x3f, 0x7f, 0xaf, 0x63, 0x55, 0x5f, 0x32, 0x55, 0x4d, 0xe2,
+	0xa4, 0xc2, 0xd1, 0xc6, 0xee, 0x21, 0x4d, 0xc0, 0x57, 0xd4, 0xe3, 0x41, 0xc4, 0x43, 0x2e, 0xf1,
+	0xda, 0xed, 0x0b, 0x01, 0xa4, 0x24, 0x2a, 0x1e, 0x8f, 0x03, 0x01, 0x86, 0x1d, 0x97, 0x4c, 0xd5,
+	0x83, 0x53, 0xe6, 0xca, 0xfc, 0x46, 0xc7, 0x08, 0x26, 0x18, 0x02, 0x26, 0x30, 0x08, 0x68, 0x58,
+	0xb6, 0x54, 0x18, 0x72, 0x1a, 0xd3, 0x85, 0x48, 0xcf, 0x1b, 0x9a, 0x60, 0x70, 0x92, 0x2b, 0x87,
+	0xeb, 0xe8, 0x2c, 0x0c, 0x73, 0x39, 0x76, 0x55, 0xf5, 0x5a, 0x18, 0x0b, 0xfa, 0x90, 0x7f, 0x90,
+	0x63, 0xef, 0x5d, 0xe2, 0x7d, 0x2f, 0x09, 0x7d, 0x62, 0xd6, 0x24, 0x87, 0xfc, 0x03, 0x8f, 0xd8,
+	0xcf, 0xee, 0xee, 0x70, 0x76, 0x3f, 0x13, 0x40, 0x4a, 0xb2, 0x8a, 0x7b, 0xb0, 0x08, 0xbd, 0x2c,
+	0x1d, 0x78, 0x46, 0x8f, 0x35, 0xb4, 0x12, 0xaf, 0x89, 0xdc, 0xb6, 0x0d, 0x2b, 0x7f, 0xc1, 0x75,
+	0xe8, 0xcb, 0xb7, 0xe3, 0x33, 0x29, 0x1c, 0xea, 0x32, 0x90, 0x02, 0x17, 0x2d, 0x6d, 0xc2, 0x74,
+	0x64, 0x1c, 0xf3, 0xf5, 0x45, 0x0f, 0xf9, 0x61, 0xdc, 0x24, 0xfd, 0xb6, 0x1b, 0x66, 0xda, 0x0b,
+	0xe6, 0x48, 0x1f, 0xc3, 0xa9, 0xc8, 0x98, 0xaa, 0x55, 0x7a, 0xcb, 0x79, 0x25, 0x2d, 0x27, 0x77,
+	0xa7, 0x40, 0x09, 0xbb, 0x1c, 0x79, 0x85, 0x9f, 0x20, 0xb1, 0x14, 0x04, 0xfd, 0x08, 0xbe, 0xd1,
+	0x90, 0xa4, 0x58, 0x57, 0xdd, 0xaf, 0x4d, 0x37, 0xa2, 0x1f, 0xdd, 0xe5, 0xc7, 0xc2, 0xe9, 0x89,
+	0x75, 0xfa, 0x12, 0xfd, 0x5c, 0x80, 0x2c, 0xb3, 0x20, 0xf4, 0x69, 0xe0, 0x7e, 0xe1, 0x61, 0x5d,
+	0xe5, 0xd1, 0xef, 0xa6, 0xad, 0x39, 0xc1, 0x14, 0x85, 0x9b, 0x32, 0x9d, 0xd2, 0x94, 0xc2, 0x09,
+	0xaa, 0x31, 0x28, 0xfc, 0x75, 0xaa, 0x8f, 0xa5, 0x9f, 0x64, 0xc1, 0x37, 0x03, 0x9f, 0x6e, 0x58,
+	0xfa, 0x47, 0xcb, 0x89, 0xa0, 0x1a, 0x32, 0xe1, 0x6a, 0xf8, 0x77, 0x06, 0x66, 0xd3, 0x28, 0xfc,
+	0xec, 0xb9, 0xf2, 0x63, 0x01, 0x46, 0x58, 0xa8, 0x6a, 0xd6, 0x27, 0x48, 0x17, 0x96, 0x98, 0x1b,
+	0x81, 0x2a, 0x96, 0x30, 0x2b, 0x30, 0x48, 0xea, 0x96, 0xb3, 0x83, 0x1d, 0xa3, 0xa8, 0xba, 0xf7,
+	0x3d, 0x19, 0xed, 0xa6, 0xca, 0x4f, 0xf9, 0x88, 0xd9, 0xd8, 0x21, 0xaf, 0x7b, 0x64, 0x2b, 0x76,
+	0x71, 0x97, 0x03, 0x3c, 0x4a, 0xc2, 0x2f, 0x89, 0xb4, 0x07, 0xe7, 0x62, 0xaa, 0xd4, 0xbf, 0x69,
+	0x1b, 0xae, 0xeb, 0xc8, 0xee, 0x27, 0xb4, 0xeb, 0x7e, 0x0d, 0xf1, 0x7e, 0x21, 0xc0, 0xf9, 0x94,
+	0x3a, 0x3f, 0x77, 0xc8, 0xa5, 0xa7, 0xb0, 0x70, 0x87, 0x38, 0x46, 0x59, 0x73, 0x70, 0x8b, 0x20,
+	0xaf, 0x60, 0xfe, 0x8f, 0xae, 0xfa, 0x9d, 0x00, 0x57, 0x0f, 0xa1, 0x9f, 0xbb, 0x2d, 0xb6, 0xb7,
+	0x09, 0x9f, 0xa6, 0xb7, 0x49, 0x1b, 0x30, 0x15, 0xfd, 0x15, 0xf7, 0x61, 0x57, 0xcb, 0x2f, 0x7b,
+	0x60, 0xba, 0xad, 0xdc, 0xcf, 0xde, 0x2d, 0x34, 0x38, 0xd6, 0xa0, 0x8e, 0x19, 0xc4, 0x1b, 0xc5,
+	0xac, 0xe7, 0x7b, 0x6f, 0x96, 0xf7, 0xdc, 0x1f, 0x96, 0xc3, 0x38, 0xb8, 0x2e, 0xa4, 0xb7, 0x9c,
+	0xc4, 0x07, 0xb8, 0xfb, 0xeb, 0x73, 0x79, 0xf5, 0x7c, 0xda, 0xcb, 0xeb, 0x14, 0x9c, 0xa0, 0xa9,
+	0xb1, 0x61, 0x55, 0x6c, 0xdb, 0x7c, 0xb8, 0x63, 0x38, 0xd8, 0x34, 0x88, 0xf7, 0xa5, 0x27, 0x5d,
+	0x85, 0x93, 0xd1, 0xc7, 0xdc, 0xa3, 0x63, 0x70, 0xc4, 0x3d, 0x50, 0x0d, 0x9e, 0x19, 0x3d, 0x85,
+	0x3e, 0xf7, 0x79, 0x59, 0x27, 0xf3, 0xff, 0x1d, 0x81, 0x2f, 0x28, 0x2f, 0xfa, 0x89, 0x00, 0xbd,
+	0x6c, 0x47, 0x82, 0xa6, 0xa2, 0xf2, 0xa6, 0x75, 0x1d, 0x23, 0x4e, 0xb7, 0xa5, 0x63, 0x06, 0x48,
+	0xb3, 0x07, 0x7f, 0xfe, 0xfb, 0xf3, 0xcc, 0x24, 0x92, 0x94, 0x88, 0x25, 0x53, 0xb0, 0x29, 0xa2,
+	0xca, 0x7f, 0x2a, 0x40, 0xbf, 0xbf, 0x24, 0x41, 0x93, 0x51, 0x2a, 0x9a, 0x57, 0x36, 0xe2, 0x99,
+	0x36, 0x54, 0xdc, 0x0c, 0x99, 0x9a, 0x31, 0x83, 0xa6, 0x92, 0xcc, 0x08, 0x16, 0x3a, 0xcc, 0x14,
+	0x6f, 0x07, 0x13, 0x63, 0x4a, 0xd3, 0xda, 0x26, 0xc6, 0x94, 0xe6, 0x45, 0x4e, 0x4a, 0x53, 0x4c,
+	0x53, 0x65, 0x83, 0x1c, 0xfa, 0x95, 0x00, 0x83, 0x4d, 0x5b, 0x18, 0x34, 0x1b, 0x8b, 0xba, 0x65,
+	0xb7, 0x23, 0x9e, 0x4d, 0x45, 0xcb, 0x8d, 0xfb, 0x16, 0x35, 0x4e, 0x46, 0xe7, 0xda, 0xfb, 0x29,
+	0x58, 0xf7, 0xa0, 0xdf, 0x0b, 0x30, 0x12, 0xb3, 0xa4, 0x40, 0xf3, 0x31, 0x5e, 0x49, 0x58, 0x9e,
+	0x88, 0x17, 0x3b, 0xe2, 0xe1, 0xa6, 0xdf, 0xa0, 0xa6, 0x5f, 0x41, 0x97, 0xda, 0xf9, 0xd5, 0x08,
+	0x49, 0x51, 0xfd, 0x5d, 0xc7, 0x5b, 0x01, 0x4e, 0x26, 0xed, 0x18, 0xd0, 0x95, 0x28, 0xa3, 0x52,
+	0x6c, 0x35, 0xc4, 0x85, 0xce, 0x19, 0x39, 0xa4, 0x15, 0x0a, 0x69, 0x09, 0x2d, 0x26, 0x41, 0x2a,
+	0x7a, 0x92, 0x22, 0x81, 0x29, 0x4f, 0xf8, 0x46, 0xe5, 0x29, 0xfa, 0x8d, 0x37, 0xe7, 0x26, 0xee,
+	0x1f, 0x50, 0x3e, 0xb6, 0xb4, 0x53, 0x2f, 0x41, 0xc4, 0xdb, 0x1f, 0x24, 0x83, 0xa3, 0xef, 0x42,
+	0x7f, 0x14, 0x40, 0x8c, 0x9f, 0xcc, 0x51, 0xe4, 0x72, 0xa7, 0xed, 0xbc, 0x2f, 0x5e, 0xee, 0x94,
+	0x8d, 0xdb, 0x73, 0x93, 0x46, 0x63, 0x01, 0x5d, 0x6e, 0x97, 0x60, 0xd1, 0xe3, 0x3c, 0xfa, 0x93,
+	0x00, 0x62, 0xfc, 0x94, 0x8c, 0x2e, 0xa5, 0xbd, 0xb2, 0x1b, 0x66, 0xfd, 0x68, 0x34, 0xed, 0x87,
+	0x71, 0xe9, 0x16, 0x45, 0x73, 0x0d, 0x2d, 0x24, 0xa1, 0x89, 0xfe, 0xd4, 0x60, 0x37, 0x21, 0xfa,
+	0xa7, 0x00, 0xa7, 0xdb, 0x4d, 0xc4, 0xe8, 0x7a, 0x5a, 0xf3, 0x22, 0x86, 0x31, 0xf1, 0xdb, 0x87,
+	0x63, 0xe6, 0x08, 0xbf, 0x43, 0x11, 0xde, 0x43, 0x4b, 0x1d, 0x23, 0x24, 0xca, 0x93, 0x96, 0xaf,
+	0xb7, 0xa7, 0xe8, 0x20, 0x13, 0xde, 0x72, 0xc4, 0xcd, 0x75, 0xe8, 0x46, 0xb2, 0xd1, 0x6d, 0x06,
+	0x50, 0xf1, 0xe6, 0x61, 0xd9, 0x39, 0xea, 0x1f, 0x52, 0xd4, 0x0f, 0xd1, 0x46, 0x4a, 0xd4, 0xb5,
+	0xb0, 0x40, 0x75, 0xab, 0xae, 0xfa, 0xc8, 0x23, 0x9d, 0xf0, 0x1f, 0x01, 0xce, 0xa4, 0x1a, 0x76,
+	0xd0, 0xad, 0x0e, 0x82, 0x17, 0x39, 0x70, 0x88, 0xb9, 0x0f, 0x90, 0xc0, 0xbd, 0xb1, 0x4a, 0xbd,
+	0x71, 0x17, 0xdd, 0xe9, 0x3c, 0x07, 0x5c, 0x5f, 0x04, 0xf3, 0x0e, 0xfb, 0x3f, 0xc2, 0xaf, 0x33,
+	0x30, 0xd7, 0xf1, 0xfc, 0x82, 0x56, 0xa2, 0x70, 0x1c, 0x76, 0x0c, 0x13, 0x57, 0x3f, 0x92, 0x34,
+	0xee, 0xa1, 0x1f, 0x50, 0x0f, 0x6d, 0xa2, 0x07, 0x49, 0x1e, 0xc2, 0x5c, 0xbc, 0x9a, 0xd4, 0x10,
+	0xa2, 0x1c, 0xf6, 0x0f, 0xaf, 0x83, 0x47, 0x4e, 0x35, 0xe8, 0x5a, 0xfa, 0x7b, 0xa2, 0xa5, 0x50,
+	0xae, 0x1f, 0x8a, 0x97, 0xa3, 0xde, 0xa0, 0xa8, 0xd7, 0xd0, 0x6a, 0x12, 0xea, 0xe6, 0x6d, 0x6f,
+	0xfb, 0xea, 0x78, 0x29, 0xc0, 0x60, 0xd3, 0xa7, 0x38, 0x52, 0x62, 0xed, 0x8c, 0xfe, 0xa6, 0x17,
+	0x2f, 0xa4, 0x67, 0xe8, 0xe4, 0xab, 0xad, 0x46, 0x99, 0xd5, 0x47, 0x1e, 0x77, 0xfe, 0xfe, 0xab,
+	0x77, 0x59, 0xe1, 0xf5, 0xbb, 0xac, 0xf0, 0xb7, 0x77, 0x59, 0xe1, 0x17, 0xef, 0xb3, 0x5d, 0xaf,
+	0xdf, 0x67, 0xbb, 0xfe, 0xf2, 0x3e, 0xdb, 0xf5, 0xbd, 0xcb, 0xa1, 0xd1, 0x85, 0x4b, 0x3c, 0x6f,
+	0x6a, 0x5b, 0xc4, 0x17, 0xbf, 0x3f, 0x77, 0x51, 0x79, 0x1c, 0x56, 0x42, 0xc7, 0x99, 0xad, 0x5e,
+	0xfa, 0x1f, 0xdc, 0x8b, 0xff, 0x0b, 0x00, 0x00, 0xff, 0xff, 0xfb, 0xb9, 0x77, 0x9e, 0x3f, 0x1f,
+	0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1380,26 +1745,30 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type QueryClient interface {
-	// Params returns the total set of minting parameters.
+	// Params returns the total set of superfluid parameters.
 	Params(ctx context.Context, in *QueryParamsRequest, opts ...grpc.CallOption) (*QueryParamsResponse, error)
-	// Returns superfluid asset type
+	// Returns superfluid asset type, whether if it's a native asset or an lp
+	// share.
 	AssetType(ctx context.Context, in *AssetTypeRequest, opts ...grpc.CallOption) (*AssetTypeResponse, error)
-	// Returns all superfluid asset types
+	// Returns all registered superfluid assets.
 	AllAssets(ctx context.Context, in *AllAssetsRequest, opts ...grpc.CallOption) (*AllAssetsResponse, error)
-	// Returns superfluid asset Multiplier
+	// Returns the osmo equivalent multiplier used in the most recent epoch.
 	AssetMultiplier(ctx context.Context, in *AssetMultiplierRequest, opts ...grpc.CallOption) (*AssetMultiplierResponse, error)
-	// Returns all superfluid intermediary account
+	// Returns all superfluid intermediary accounts.
 	AllIntermediaryAccounts(ctx context.Context, in *AllIntermediaryAccountsRequest, opts ...grpc.CallOption) (*AllIntermediaryAccountsResponse, error)
 	// Returns intermediary account connected to a superfluid staked lock by id
 	ConnectedIntermediaryAccount(ctx context.Context, in *ConnectedIntermediaryAccountRequest, opts ...grpc.CallOption) (*ConnectedIntermediaryAccountResponse, error)
-	// Returns the total amount of osmo superfluidly staked
-	// response denominated in uosmo
+	// Returns the amount of delegations of specific denom for all validators
+	TotalDelegationByValidatorForDenom(ctx context.Context, in *QueryTotalDelegationByValidatorForDenomRequest, opts ...grpc.CallOption) (*QueryTotalDelegationByValidatorForDenomResponse, error)
+	// Returns the total amount of osmo superfluidly staked.
+	// Response is denominated in uosmo.
 	TotalSuperfluidDelegations(ctx context.Context, in *TotalSuperfluidDelegationsRequest, opts ...grpc.CallOption) (*TotalSuperfluidDelegationsResponse, error)
-	// Returns the coins superfluid delegated for a delegator, validator, denom
+	// Returns the coins superfluid delegated for the delegator, validator, denom
 	// triplet
 	SuperfluidDelegationAmount(ctx context.Context, in *SuperfluidDelegationAmountRequest, opts ...grpc.CallOption) (*SuperfluidDelegationAmountResponse, error)
-	// Returns all the superfluid poistions for a specific delegator
+	// Returns all the delegated superfluid poistions for a specific delegator.
 	SuperfluidDelegationsByDelegator(ctx context.Context, in *SuperfluidDelegationsByDelegatorRequest, opts ...grpc.CallOption) (*SuperfluidDelegationsByDelegatorResponse, error)
+	// Returns all the undelegating superfluid poistions for a specific delegator.
 	SuperfluidUndelegationsByDelegator(ctx context.Context, in *SuperfluidUndelegationsByDelegatorRequest, opts ...grpc.CallOption) (*SuperfluidUndelegationsByDelegatorResponse, error)
 	// Returns all the superfluid positions of a specific denom delegated to one
 	// validator
@@ -1408,6 +1777,10 @@ type QueryClient interface {
 	// This is labeled an estimate, because the way it calculates the amount can
 	// lead rounding errors from the true delegated amount
 	EstimateSuperfluidDelegatedAmountByValidatorDenom(ctx context.Context, in *EstimateSuperfluidDelegatedAmountByValidatorDenomRequest, opts ...grpc.CallOption) (*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse, error)
+	// Returns the specified delegations for a specific delegator
+	TotalDelegationByDelegator(ctx context.Context, in *QueryTotalDelegationByDelegatorRequest, opts ...grpc.CallOption) (*QueryTotalDelegationByDelegatorResponse, error)
+	// Returns a list of whitelisted pool ids to unpool.
+	UnpoolWhitelist(ctx context.Context, in *QueryUnpoolWhitelistRequest, opts ...grpc.CallOption) (*QueryUnpoolWhitelistResponse, error)
 }
 
 type queryClient struct {
@@ -1472,6 +1845,15 @@ func (c *queryClient) ConnectedIntermediaryAccount(ctx context.Context, in *Conn
 	return out, nil
 }
 
+func (c *queryClient) TotalDelegationByValidatorForDenom(ctx context.Context, in *QueryTotalDelegationByValidatorForDenomRequest, opts ...grpc.CallOption) (*QueryTotalDelegationByValidatorForDenomResponse, error) {
+	out := new(QueryTotalDelegationByValidatorForDenomResponse)
+	err := c.cc.Invoke(ctx, "/osmosis.superfluid.Query/TotalDelegationByValidatorForDenom", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) TotalSuperfluidDelegations(ctx context.Context, in *TotalSuperfluidDelegationsRequest, opts ...grpc.CallOption) (*TotalSuperfluidDelegationsResponse, error) {
 	out := new(TotalSuperfluidDelegationsResponse)
 	err := c.cc.Invoke(ctx, "/osmosis.superfluid.Query/TotalSuperfluidDelegations", in, out, opts...)
@@ -1526,28 +1908,50 @@ func (c *queryClient) EstimateSuperfluidDelegatedAmountByValidatorDenom(ctx cont
 	return out, nil
 }
 
+func (c *queryClient) TotalDelegationByDelegator(ctx context.Context, in *QueryTotalDelegationByDelegatorRequest, opts ...grpc.CallOption) (*QueryTotalDelegationByDelegatorResponse, error) {
+	out := new(QueryTotalDelegationByDelegatorResponse)
+	err := c.cc.Invoke(ctx, "/osmosis.superfluid.Query/TotalDelegationByDelegator", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) UnpoolWhitelist(ctx context.Context, in *QueryUnpoolWhitelistRequest, opts ...grpc.CallOption) (*QueryUnpoolWhitelistResponse, error) {
+	out := new(QueryUnpoolWhitelistResponse)
+	err := c.cc.Invoke(ctx, "/osmosis.superfluid.Query/UnpoolWhitelist", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 type QueryServer interface {
-	// Params returns the total set of minting parameters.
+	// Params returns the total set of superfluid parameters.
 	Params(context.Context, *QueryParamsRequest) (*QueryParamsResponse, error)
-	// Returns superfluid asset type
+	// Returns superfluid asset type, whether if it's a native asset or an lp
+	// share.
 	AssetType(context.Context, *AssetTypeRequest) (*AssetTypeResponse, error)
-	// Returns all superfluid asset types
+	// Returns all registered superfluid assets.
 	AllAssets(context.Context, *AllAssetsRequest) (*AllAssetsResponse, error)
-	// Returns superfluid asset Multiplier
+	// Returns the osmo equivalent multiplier used in the most recent epoch.
 	AssetMultiplier(context.Context, *AssetMultiplierRequest) (*AssetMultiplierResponse, error)
-	// Returns all superfluid intermediary account
+	// Returns all superfluid intermediary accounts.
 	AllIntermediaryAccounts(context.Context, *AllIntermediaryAccountsRequest) (*AllIntermediaryAccountsResponse, error)
 	// Returns intermediary account connected to a superfluid staked lock by id
 	ConnectedIntermediaryAccount(context.Context, *ConnectedIntermediaryAccountRequest) (*ConnectedIntermediaryAccountResponse, error)
-	// Returns the total amount of osmo superfluidly staked
-	// response denominated in uosmo
+	// Returns the amount of delegations of specific denom for all validators
+	TotalDelegationByValidatorForDenom(context.Context, *QueryTotalDelegationByValidatorForDenomRequest) (*QueryTotalDelegationByValidatorForDenomResponse, error)
+	// Returns the total amount of osmo superfluidly staked.
+	// Response is denominated in uosmo.
 	TotalSuperfluidDelegations(context.Context, *TotalSuperfluidDelegationsRequest) (*TotalSuperfluidDelegationsResponse, error)
-	// Returns the coins superfluid delegated for a delegator, validator, denom
+	// Returns the coins superfluid delegated for the delegator, validator, denom
 	// triplet
 	SuperfluidDelegationAmount(context.Context, *SuperfluidDelegationAmountRequest) (*SuperfluidDelegationAmountResponse, error)
-	// Returns all the superfluid poistions for a specific delegator
+	// Returns all the delegated superfluid poistions for a specific delegator.
 	SuperfluidDelegationsByDelegator(context.Context, *SuperfluidDelegationsByDelegatorRequest) (*SuperfluidDelegationsByDelegatorResponse, error)
+	// Returns all the undelegating superfluid poistions for a specific delegator.
 	SuperfluidUndelegationsByDelegator(context.Context, *SuperfluidUndelegationsByDelegatorRequest) (*SuperfluidUndelegationsByDelegatorResponse, error)
 	// Returns all the superfluid positions of a specific denom delegated to one
 	// validator
@@ -1556,6 +1960,10 @@ type QueryServer interface {
 	// This is labeled an estimate, because the way it calculates the amount can
 	// lead rounding errors from the true delegated amount
 	EstimateSuperfluidDelegatedAmountByValidatorDenom(context.Context, *EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) (*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse, error)
+	// Returns the specified delegations for a specific delegator
+	TotalDelegationByDelegator(context.Context, *QueryTotalDelegationByDelegatorRequest) (*QueryTotalDelegationByDelegatorResponse, error)
+	// Returns a list of whitelisted pool ids to unpool.
+	UnpoolWhitelist(context.Context, *QueryUnpoolWhitelistRequest) (*QueryUnpoolWhitelistResponse, error)
 }
 
 // UnimplementedQueryServer can be embedded to have forward compatible implementations.
@@ -1580,6 +1988,9 @@ func (*UnimplementedQueryServer) AllIntermediaryAccounts(ctx context.Context, re
 func (*UnimplementedQueryServer) ConnectedIntermediaryAccount(ctx context.Context, req *ConnectedIntermediaryAccountRequest) (*ConnectedIntermediaryAccountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConnectedIntermediaryAccount not implemented")
 }
+func (*UnimplementedQueryServer) TotalDelegationByValidatorForDenom(ctx context.Context, req *QueryTotalDelegationByValidatorForDenomRequest) (*QueryTotalDelegationByValidatorForDenomResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TotalDelegationByValidatorForDenom not implemented")
+}
 func (*UnimplementedQueryServer) TotalSuperfluidDelegations(ctx context.Context, req *TotalSuperfluidDelegationsRequest) (*TotalSuperfluidDelegationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TotalSuperfluidDelegations not implemented")
 }
@@ -1597,6 +2008,12 @@ func (*UnimplementedQueryServer) SuperfluidDelegationsByValidatorDenom(ctx conte
 }
 func (*UnimplementedQueryServer) EstimateSuperfluidDelegatedAmountByValidatorDenom(ctx context.Context, req *EstimateSuperfluidDelegatedAmountByValidatorDenomRequest) (*EstimateSuperfluidDelegatedAmountByValidatorDenomResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EstimateSuperfluidDelegatedAmountByValidatorDenom not implemented")
+}
+func (*UnimplementedQueryServer) TotalDelegationByDelegator(ctx context.Context, req *QueryTotalDelegationByDelegatorRequest) (*QueryTotalDelegationByDelegatorResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TotalDelegationByDelegator not implemented")
+}
+func (*UnimplementedQueryServer) UnpoolWhitelist(ctx context.Context, req *QueryUnpoolWhitelistRequest) (*QueryUnpoolWhitelistResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UnpoolWhitelist not implemented")
 }
 
 func RegisterQueryServer(s grpc1.Server, srv QueryServer) {
@@ -1711,6 +2128,24 @@ func _Query_ConnectedIntermediaryAccount_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TotalDelegationByValidatorForDenom_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalDelegationByValidatorForDenomRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TotalDelegationByValidatorForDenom(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/osmosis.superfluid.Query/TotalDelegationByValidatorForDenom",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TotalDelegationByValidatorForDenom(ctx, req.(*QueryTotalDelegationByValidatorForDenomRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_TotalSuperfluidDelegations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TotalSuperfluidDelegationsRequest)
 	if err := dec(in); err != nil {
@@ -1819,6 +2254,42 @@ func _Query_EstimateSuperfluidDelegatedAmountByValidatorDenom_Handler(srv interf
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_TotalDelegationByDelegator_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryTotalDelegationByDelegatorRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).TotalDelegationByDelegator(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/osmosis.superfluid.Query/TotalDelegationByDelegator",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).TotalDelegationByDelegator(ctx, req.(*QueryTotalDelegationByDelegatorRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_UnpoolWhitelist_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryUnpoolWhitelistRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).UnpoolWhitelist(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/osmosis.superfluid.Query/UnpoolWhitelist",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).UnpoolWhitelist(ctx, req.(*QueryUnpoolWhitelistRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 var _Query_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "osmosis.superfluid.Query",
 	HandlerType: (*QueryServer)(nil),
@@ -1848,6 +2319,10 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ConnectedIntermediaryAccount_Handler,
 		},
 		{
+			MethodName: "TotalDelegationByValidatorForDenom",
+			Handler:    _Query_TotalDelegationByValidatorForDenom_Handler,
+		},
+		{
 			MethodName: "TotalSuperfluidDelegations",
 			Handler:    _Query_TotalSuperfluidDelegations_Handler,
 		},
@@ -1870,6 +2345,14 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "EstimateSuperfluidDelegatedAmountByValidatorDenom",
 			Handler:    _Query_EstimateSuperfluidDelegatedAmountByValidatorDenom_Handler,
+		},
+		{
+			MethodName: "TotalDelegationByDelegator",
+			Handler:    _Query_TotalDelegationByDelegator_Handler,
+		},
+		{
+			MethodName: "UnpoolWhitelist",
+			Handler:    _Query_UnpoolWhitelist_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -2305,6 +2788,123 @@ func (m *ConnectedIntermediaryAccountResponse) MarshalToSizedBuffer(dAtA []byte)
 			i -= size
 			i = encodeVarintQuery(dAtA, i, uint64(size))
 		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Denom) > 0 {
+		i -= len(m.Denom)
+		copy(dAtA[i:], m.Denom)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.Denom)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Assets) > 0 {
+		for iNdEx := len(m.Assets) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Assets[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Delegations) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Delegations) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Delegations) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size := m.OsmoEquivalent.Size()
+		i -= size
+		if _, err := m.OsmoEquivalent.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x1a
+	{
+		size := m.AmountSfsd.Size()
+		i -= size
+		if _, err := m.AmountSfsd.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.ValAddr) > 0 {
+		i -= len(m.ValAddr)
+		copy(dAtA[i:], m.ValAddr)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ValAddr)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -2789,6 +3389,175 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) MarshalToSiz
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryTotalDelegationByDelegatorRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalDelegationByDelegatorRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalDelegationByDelegatorRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DelegatorAddress) > 0 {
+		i -= len(m.DelegatorAddress)
+		copy(dAtA[i:], m.DelegatorAddress)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.DelegatorAddress)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	{
+		size, err := m.TotalEquivalentStakedAmount.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintQuery(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x22
+	if len(m.TotalDelegatedCoins) > 0 {
+		for iNdEx := len(m.TotalDelegatedCoins) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.TotalDelegatedCoins[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.DelegationResponse) > 0 {
+		for iNdEx := len(m.DelegationResponse) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.DelegationResponse[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x12
+		}
+	}
+	if len(m.SuperfluidDelegationRecords) > 0 {
+		for iNdEx := len(m.SuperfluidDelegationRecords) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SuperfluidDelegationRecords[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUnpoolWhitelistRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUnpoolWhitelistRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUnpoolWhitelistRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryUnpoolWhitelistResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryUnpoolWhitelistResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryUnpoolWhitelistResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PoolIds) > 0 {
+		dAtA9 := make([]byte, len(m.PoolIds)*10)
+		var j8 int
+		for _, num := range m.PoolIds {
+			for num >= 1<<7 {
+				dAtA9[j8] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j8++
+			}
+			dAtA9[j8] = uint8(num)
+			j8++
+		}
+		i -= j8
+		copy(dAtA[i:], dAtA9[:j8])
+		i = encodeVarintQuery(dAtA, i, uint64(j8))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	offset -= sovQuery(v)
 	base := offset
@@ -2973,6 +3742,51 @@ func (m *ConnectedIntermediaryAccountResponse) Size() (n int) {
 		l = m.Account.Size()
 		n += 1 + l + sovQuery(uint64(l))
 	}
+	return n
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Denom)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryTotalDelegationByValidatorForDenomResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Assets) > 0 {
+		for _, e := range m.Assets {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Delegations) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ValAddr)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = m.AmountSfsd.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	l = m.OsmoEquivalent.Size()
+	n += 1 + l + sovQuery(uint64(l))
 	return n
 }
 
@@ -3172,6 +3986,73 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) Size() (n in
 			l = e.Size()
 			n += 1 + l + sovQuery(uint64(l))
 		}
+	}
+	return n
+}
+
+func (m *QueryTotalDelegationByDelegatorRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.DelegatorAddress)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryTotalDelegationByDelegatorResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SuperfluidDelegationRecords) > 0 {
+		for _, e := range m.SuperfluidDelegationRecords {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if len(m.DelegationResponse) > 0 {
+		for _, e := range m.DelegationResponse {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if len(m.TotalDelegatedCoins) > 0 {
+		for _, e := range m.TotalDelegatedCoins {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	l = m.TotalEquivalentStakedAmount.Size()
+	n += 1 + l + sovQuery(uint64(l))
+	return n
+}
+
+func (m *QueryUnpoolWhitelistRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *QueryUnpoolWhitelistResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.PoolIds) > 0 {
+		l = 0
+		for _, e := range m.PoolIds {
+			l += sovQuery(uint64(e))
+		}
+		n += 1 + sovQuery(uint64(l)) + l
 	}
 	return n
 }
@@ -4270,6 +5151,322 @@ func (m *ConnectedIntermediaryAccountResponse) Unmarshal(dAtA []byte) error {
 				m.Account = &SuperfluidIntermediaryAccountInfo{}
 			}
 			if err := m.Account.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalDelegationByValidatorForDenomRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalDelegationByValidatorForDenomRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalDelegationByValidatorForDenomRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Denom", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Denom = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalDelegationByValidatorForDenomResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalDelegationByValidatorForDenomResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalDelegationByValidatorForDenomResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Assets", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Assets = append(m.Assets, Delegations{})
+			if err := m.Assets[len(m.Assets)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Delegations) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Delegations: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Delegations: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ValAddr", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ValAddr = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AmountSfsd", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.AmountSfsd.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OsmoEquivalent", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.OsmoEquivalent.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
@@ -5532,6 +6729,449 @@ func (m *EstimateSuperfluidDelegatedAmountByValidatorDenomResponse) Unmarshal(dA
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalDelegationByDelegatorRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalDelegationByDelegatorRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalDelegationByDelegatorRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegatorAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegatorAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryTotalDelegationByDelegatorResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryTotalDelegationByDelegatorResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryTotalDelegationByDelegatorResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SuperfluidDelegationRecords", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SuperfluidDelegationRecords = append(m.SuperfluidDelegationRecords, SuperfluidDelegationRecord{})
+			if err := m.SuperfluidDelegationRecords[len(m.SuperfluidDelegationRecords)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegationResponse", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DelegationResponse = append(m.DelegationResponse, types2.DelegationResponse{})
+			if err := m.DelegationResponse[len(m.DelegationResponse)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalDelegatedCoins", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.TotalDelegatedCoins = append(m.TotalDelegatedCoins, types.Coin{})
+			if err := m.TotalDelegatedCoins[len(m.TotalDelegatedCoins)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TotalEquivalentStakedAmount", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.TotalEquivalentStakedAmount.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUnpoolWhitelistRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUnpoolWhitelistRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUnpoolWhitelistRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryUnpoolWhitelistResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryUnpoolWhitelistResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryUnpoolWhitelistResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.PoolIds = append(m.PoolIds, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowQuery
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthQuery
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthQuery
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.PoolIds) == 0 {
+					m.PoolIds = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowQuery
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.PoolIds = append(m.PoolIds, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field PoolIds", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipQuery(dAtA[iNdEx:])

@@ -13,25 +13,21 @@ type ImageConfig struct {
 	RelayerTag        string
 }
 
+//nolint:deadcode
 const (
 	// Current Git branch osmosis repo/version. It is meant to be built locally.
 	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
 	// This image should be pre-built with `make docker-build-debug` either in CI or locally.
 	CurrentBranchOsmoRepository = "osmosis"
 	CurrentBranchOsmoTag        = "debug"
-	/// Current Git branch repo/version for osmosis initialization. It is meant to be built locally.
-	// It is used when skipping upgrade by setting OSMOSIS_E2E_SKIP_UPGRADE to true).
-	// This image should be pre-built with `make docker-build-e2e-chain-init` either in CI or locally.
-	currentBranchInitRepository = "osmosis-e2e-chain-init"
-	currentBranchInitTag        = "debug"
 	// Pre-upgrade osmosis repo/tag to pull.
 	// It should be uploaded to Docker Hub. OSMOSIS_E2E_SKIP_UPGRADE should be unset
 	// for this functionality to be used.
 	previousVersionOsmoRepository = "osmolabs/osmosis-dev"
-	previousVersionOsmoTag        = "v10.0.0-debug"
+	previousVersionOsmoTag        = "13.1.0"
 	// Pre-upgrade repo/tag for osmosis initialization (this should be one version below upgradeVersion)
 	previousVersionInitRepository = "osmolabs/osmosis-e2e-init-chain"
-	previousVersionInitTag        = "v10.0.0-e2e-v1"
+	previousVersionInitTag        = "v13.1.0"
 	// Hermes repo/version for relayer
 	relayerRepository = "osmolabs/hermes"
 	relayerTag        = "0.13.0"
@@ -52,6 +48,7 @@ func NewImageConfig(isUpgrade, isFork bool) ImageConfig {
 		// the need for Docker.
 		config.OsmosisRepository = CurrentBranchOsmoRepository
 		config.OsmosisTag = CurrentBranchOsmoTag
+		return config
 	}
 
 	// If upgrade is tested, we need to utilize InitRepository and InitTag

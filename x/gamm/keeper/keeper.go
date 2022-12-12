@@ -2,9 +2,8 @@ package keeper
 
 import (
 	"fmt"
-	"strconv"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -30,12 +29,13 @@ type Keeper struct {
 	hooks      types.GammHooks
 
 	// keepers
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
-	distrKeeper   types.DistrKeeper
+	accountKeeper        types.AccountKeeper
+	bankKeeper           types.BankKeeper
+	communityPoolKeeper  types.CommunityPoolKeeper
+	poolIncentivesKeeper types.PoolIncentivesKeeper
 }
 
-func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, distrKeeper types.DistrKeeper) Keeper {
+func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey, paramSpace paramtypes.Subspace, accountKeeper types.AccountKeeper, bankKeeper types.BankKeeper, communityPoolKeeper types.CommunityPoolKeeper) Keeper {
 	// Ensure that the module account are set.
 	moduleAddr, perms := accountKeeper.GetModuleAddressAndPermissions(types.ModuleName)
 	if moduleAddr == nil {
@@ -55,47 +55,10 @@ func NewKeeper(cdc codec.BinaryCodec, storeKey sdk.StoreKey, paramSpace paramtyp
 		cdc:        cdc,
 		paramSpace: paramSpace,
 		// keepers
-		accountKeeper: accountKeeper,
-		bankKeeper:    bankKeeper,
-		distrKeeper:   distrKeeper,
+		accountKeeper:       accountKeeper,
+		bankKeeper:          bankKeeper,
+		communityPoolKeeper: communityPoolKeeper,
 	}
-}
-
-func (k *Keeper) createSwapEvent(ctx sdk.Context, sender sdk.AccAddress, poolId uint64, input sdk.Coins, output sdk.Coins) {
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.TypeEvtTokenSwapped,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, sender.String()),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(poolId, 10)),
-			sdk.NewAttribute(types.AttributeKeyTokensIn, input.String()),
-			sdk.NewAttribute(types.AttributeKeyTokensOut, output.String()),
-		),
-	})
-}
-
-func (k *Keeper) createAddLiquidityEvent(ctx sdk.Context, sender sdk.AccAddress, poolId uint64, liquidity sdk.Coins) {
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.TypeEvtPoolJoined,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, sender.String()),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(poolId, 10)),
-			sdk.NewAttribute(types.AttributeKeyTokensIn, liquidity.String()),
-		),
-	})
-}
-
-func (k *Keeper) createRemoveLiquidityEvent(ctx sdk.Context, sender sdk.AccAddress, poolId uint64, liquidity sdk.Coins) {
-	ctx.EventManager().EmitEvents(sdk.Events{
-		sdk.NewEvent(
-			types.TypeEvtPoolExited,
-			sdk.NewAttribute(sdk.AttributeKeyModule, types.AttributeValueCategory),
-			sdk.NewAttribute(sdk.AttributeKeySender, sender.String()),
-			sdk.NewAttribute(types.AttributeKeyPoolId, strconv.FormatUint(poolId, 10)),
-			sdk.NewAttribute(types.AttributeKeyTokensOut, liquidity.String()),
-		),
-	})
 }
 
 // Set the gamm hooks.
@@ -107,4 +70,19 @@ func (k *Keeper) SetHooks(gh types.GammHooks) *Keeper {
 	k.hooks = gh
 
 	return k
+}
+
+func (k *Keeper) SetPoolIncentivesKeeper(poolIncentivesKeeper types.PoolIncentivesKeeper) {
+	k.poolIncentivesKeeper = poolIncentivesKeeper
+}
+
+// GetParams returns the total set params.
+func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
+	k.paramSpace.GetParamSet(ctx, &params)
+	return params
+}
+
+// SetParams sets the total set of params.
+func (k Keeper) setParams(ctx sdk.Context, params types.Params) {
+	k.paramSpace.SetParamSet(ctx, &params)
 }

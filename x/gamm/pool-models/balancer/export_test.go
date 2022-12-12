@@ -3,18 +3,19 @@ package balancer
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
 const (
-	ErrMsgFormatRepeatingPoolAssetsNotAllowed = errMsgFormatRepeatingPoolAssetsNotAllowed
-	ErrMsgFormatNoPoolAssetFound              = errMsgFormatNoPoolAssetFound
+	ErrMsgFormatRepeatingPoolAssetsNotAllowed = formatRepeatingPoolAssetsNotAllowedErrFormat
+	ErrMsgFormatNoPoolAssetFound              = formatNoPoolAssetFoundErrFormat
 )
 
 var (
-	ErrMsgFormatFailedInterimLiquidityUpdate = errMsgFormatFailedInterimLiquidityUpdate
+	ErrMsgFormatFailedInterimLiquidityUpdate = failedInterimLiquidityUpdateErrFormat
 
 	CalcPoolSharesOutGivenSingleAssetIn   = calcPoolSharesOutGivenSingleAssetIn
 	CalcSingleAssetInGivenPoolSharesOut   = calcSingleAssetInGivenPoolSharesOut
 	UpdateIntermediaryPoolAssetsLiquidity = updateIntermediaryPoolAssetsLiquidity
 
 	GetPoolAssetsByDenom = getPoolAssetsByDenom
+	EnsureDenomInPool    = ensureDenomInPool
 )
 
 func (p *Pool) CalcSingleAssetJoin(tokenIn sdk.Coin, swapFee sdk.Dec, tokenInPoolAsset PoolAsset, totalShares sdk.Int) (numShares sdk.Int, err error) {

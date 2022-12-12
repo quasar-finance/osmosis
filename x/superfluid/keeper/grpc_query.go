@@ -11,10 +11,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	appparams "github.com/osmosis-labs/osmosis/v7/app/params"
+	appparams "github.com/osmosis-labs/osmosis/v13/app/params"
 
-	lockuptypes "github.com/osmosis-labs/osmosis/v7/x/lockup/types"
-	"github.com/osmosis-labs/osmosis/v7/x/superfluid/types"
+	lockuptypes "github.com/osmosis-labs/osmosis/v13/x/lockup/types"
+	"github.com/osmosis-labs/osmosis/v13/x/superfluid/types"
 )
 
 var _ types.QueryServer = Querier{}
@@ -392,6 +392,46 @@ func (q Querier) EstimateSuperfluidDelegatedAmountByValidatorDenom(goCtx context
 	}, nil
 }
 
+func (q Querier) TotalDelegationByValidatorForDenom(goCtx context.Context, req *types.QueryTotalDelegationByValidatorForDenomRequest) (*types.QueryTotalDelegationByValidatorForDenomResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	var intermediaryAccount types.SuperfluidIntermediaryAccount
+
+	delegationsByValidator := []types.Delegations{}
+	intermediaryAccounts := q.Keeper.GetAllIntermediaryAccounts(ctx)
+	for _, intermediaryAccount = range intermediaryAccounts {
+		if intermediaryAccount.Denom != req.Denom {
+			continue
+		}
+
+		valAddr, err := sdk.ValAddressFromBech32(intermediaryAccount.ValAddr)
+		if err != nil {
+			return nil, err
+		}
+
+		delegation, _ := q.SuperfluidDelegationsByValidatorDenom(goCtx, &types.SuperfluidDelegationsByValidatorDenomRequest{ValidatorAddress: valAddr.String(), Denom: req.Denom})
+
+		amount := sdk.ZeroInt()
+		for _, record := range delegation.SuperfluidDelegationRecords {
+			amount = amount.Add(record.DelegationAmount.Amount)
+		}
+
+		equivalentAmountOSMO := q.Keeper.GetSuperfluidOSMOTokens(ctx, req.Denom, amount)
+
+		result := types.Delegations{
+			ValAddr:        valAddr.String(),
+			AmountSfsd:     amount,
+			OsmoEquivalent: equivalentAmountOSMO,
+		}
+
+		delegationsByValidator = append(delegationsByValidator, result)
+	}
+
+	return &types.QueryTotalDelegationByValidatorForDenomResponse{
+		Assets: delegationsByValidator,
+	}, nil
+}
+
 // TotalSuperfluidDelegations returns total amount of osmo delegated via superfluid staking.
 func (q Querier) TotalSuperfluidDelegations(goCtx context.Context, _ *types.TotalSuperfluidDelegationsRequest) (*types.TotalSuperfluidDelegationsResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -421,5 +461,75 @@ func (q Querier) TotalSuperfluidDelegations(goCtx context.Context, _ *types.Tota
 
 	return &types.TotalSuperfluidDelegationsResponse{
 		TotalDelegations: totalSuperfluidDelegated,
+	}, nil
+}
+
+func (q Querier) TotalDelegationByDelegator(goCtx context.Context, req *types.QueryTotalDelegationByDelegatorRequest) (*types.QueryTotalDelegationByDelegatorResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+	if len(req.DelegatorAddress) == 0 {
+		return nil, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "empty delegator address")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	delAddr, err := sdk.AccAddressFromBech32(req.DelegatorAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	superfluidDelegationResp, err := q.SuperfluidDelegationsByDelegator(goCtx, &types.SuperfluidDelegationsByDelegatorRequest{
+		DelegatorAddress: req.DelegatorAddress,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	res := types.QueryTotalDelegationByDelegatorResponse{
+		SuperfluidDelegationRecords: superfluidDelegationResp.SuperfluidDelegationRecords,
+		DelegationResponse:          []stakingtypes.DelegationResponse{},
+		TotalDelegatedCoins:         superfluidDelegationResp.TotalDelegatedCoins,
+		TotalEquivalentStakedAmount: superfluidDelegationResp.TotalEquivalentStakedAmount,
+	}
+
+	// this is for getting normal staking
+	q.sk.IterateDelegations(ctx, delAddr, func(_ int64, del stakingtypes.DelegationI) bool {
+		val, found := q.sk.GetValidator(ctx, del.GetValidatorAddr())
+		if !found {
+			return true
+		}
+
+		lockedCoins := sdk.NewCoin(appparams.BaseCoinUnit, val.TokensFromShares(del.GetShares()).TruncateInt())
+
+		res.DelegationResponse = append(res.DelegationResponse,
+			stakingtypes.DelegationResponse{
+				Delegation: stakingtypes.Delegation{
+					DelegatorAddress: del.GetDelegatorAddr().String(),
+					ValidatorAddress: del.GetValidatorAddr().String(),
+					Shares:           del.GetShares(),
+				},
+				Balance: lockedCoins,
+			},
+		)
+
+		res.TotalDelegatedCoins = res.TotalDelegatedCoins.Add(lockedCoins)
+		res.TotalEquivalentStakedAmount = res.TotalEquivalentStakedAmount.Add(lockedCoins)
+
+		return false
+	})
+
+	return &res, nil
+}
+
+func (q Querier) UnpoolWhitelist(goCtx context.Context, req *types.QueryUnpoolWhitelistRequest) (*types.QueryUnpoolWhitelistResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "empty request")
+	}
+
+	allowedPools := q.GetUnpoolAllowedPools(sdk.UnwrapSDKContext(goCtx))
+
+	return &types.QueryUnpoolWhitelistResponse{
+		PoolIds: allowedPools,
 	}, nil
 }

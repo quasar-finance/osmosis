@@ -25,14 +25,16 @@ import (
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	appParams "github.com/osmosis-labs/osmosis/v7/app/params"
+	appParams "github.com/osmosis-labs/osmosis/v13/app/params"
 
-	epochstypes "github.com/osmosis-labs/osmosis/v7/x/epochs/types"
-	incentivestypes "github.com/osmosis-labs/osmosis/v7/x/incentives/types"
-	minttypes "github.com/osmosis-labs/osmosis/v7/x/mint/types"
-	poolincentivestypes "github.com/osmosis-labs/osmosis/v7/x/pool-incentives/types"
+	epochstypes "github.com/osmosis-labs/osmosis/v13/x/epochs/types"
+	incentivestypes "github.com/osmosis-labs/osmosis/v13/x/incentives/types"
+	minttypes "github.com/osmosis-labs/osmosis/v13/x/mint/types"
+	poolincentivestypes "github.com/osmosis-labs/osmosis/v13/x/pool-incentives/types"
 )
 
+// PrepareGenesisCmd returns prepare-genesis cobra Command.
+//
 //nolint:ineffassign
 func PrepareGenesisCmd(defaultNodeHome string, mbm module.BasicManager) *cobra.Command {
 	cmd := &cobra.Command{
@@ -78,6 +80,9 @@ Example:
 
 			// run Prepare Genesis
 			appState, genDoc, err = PrepareGenesis(clientCtx, appState, genDoc, genesisParams, chainID)
+			if err != nil {
+				return err
+			}
 
 			// validate genesis state
 			if err = mbm.ValidateGenesis(cdc, clientCtx.TxConfig, appState); err != nil {

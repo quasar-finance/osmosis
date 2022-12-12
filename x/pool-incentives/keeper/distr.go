@@ -4,22 +4,21 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/osmosis-labs/osmosis/v7/x/pool-incentives/types"
+	"github.com/osmosis-labs/osmosis/v13/osmoutils"
+	"github.com/osmosis-labs/osmosis/v13/x/pool-incentives/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+// FundCommunityPoolFromModule allows the pool-incentives module to directly fund the community fund pool.
 func (k Keeper) FundCommunityPoolFromModule(ctx sdk.Context, asset sdk.Coin) error {
-	err := k.bankKeeper.SendCoinsFromModuleToModule(ctx, types.ModuleName, k.communityPoolName, sdk.Coins{asset})
-	if err != nil {
-		return err
+	moduleAddr := k.accountKeeper.GetModuleAddress(types.ModuleName)
+	if moduleAddr == nil {
+		panic("Could not get distribution module from SDK")
 	}
 
-	feePool := k.distrKeeper.GetFeePool(ctx)
-	feePool.CommunityPool = feePool.CommunityPool.Add(sdk.NewDecCoinsFromCoins(asset)...)
-	k.distrKeeper.SetFeePool(ctx, feePool)
-	return nil
+	return k.distrKeeper.FundCommunityPool(ctx, sdk.Coins{asset}, moduleAddr)
 }
 
 // AllocateAsset allocates and distributes coin according a gauge’s proportional weight that is recorded in the record.
@@ -70,20 +69,17 @@ func (k Keeper) AllocateAsset(ctx sdk.Context) error {
 
 func (k Keeper) GetDistrInfo(ctx sdk.Context) types.DistrInfo {
 	store := ctx.KVStore(k.storeKey)
-	bz := store.Get(types.DistrInfoKey)
 	distrInfo := types.DistrInfo{}
-	k.cdc.MustUnmarshal(bz, &distrInfo)
-
+	osmoutils.MustGet(store, types.DistrInfoKey, &distrInfo)
 	return distrInfo
 }
 
 func (k Keeper) SetDistrInfo(ctx sdk.Context, distrInfo types.DistrInfo) {
 	store := ctx.KVStore(k.storeKey)
-	bz := k.cdc.MustMarshal(&distrInfo)
-	store.Set(types.DistrInfoKey, bz)
+	osmoutils.MustSet(store, types.DistrInfoKey, &distrInfo)
 }
 
-// Validates a list of records to ensure that:
+// validateRecords validates a list of records to ensure that:
 // 1) there are no duplicates,
 // 2) the records are in sorted order.
 // 3) the records only pay to gauges that exist.
@@ -150,7 +146,7 @@ func (k Keeper) ReplaceDistrRecords(ctx sdk.Context, records ...types.DistrRecor
 	return nil
 }
 
-// This is checked for no err when a proposal is made, and executed when a proposal passes.
+// UpdateDistrRecords is checked for no err when a proposal is made, and executed when a proposal passes.
 func (k Keeper) UpdateDistrRecords(ctx sdk.Context, records ...types.DistrRecord) error {
 	recordsMap := make(map[uint64]types.DistrRecord)
 	totalWeight := sdk.NewInt(0)

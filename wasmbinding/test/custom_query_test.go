@@ -3,7 +3,7 @@ package wasmbinding
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 	"testing"
 
@@ -15,10 +15,10 @@ import (
 	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/osmosis-labs/osmosis/v7/app"
-	"github.com/osmosis-labs/osmosis/v7/wasmbinding"
-	"github.com/osmosis-labs/osmosis/v7/wasmbinding/bindings"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/pool-models/balancer"
+	"github.com/osmosis-labs/osmosis/v13/app"
+	"github.com/osmosis-labs/osmosis/v13/wasmbinding"
+	"github.com/osmosis-labs/osmosis/v13/wasmbinding/bindings"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/balancer"
 )
 
 // we must pay this many uosmo for every pool we create
@@ -73,14 +73,14 @@ func TestQueryPool(t *testing.T) {
 		sdk.NewInt64Coin("uosmo", 12000000),
 		sdk.NewInt64Coin("ustar", 240000000),
 	}
-	// 20 star to 1 osmo
+	// 2 star to 1 osmo
 	starPool := preparePool(t, ctx, osmosis, actor, poolFunds)
 
 	pool2Funds := []sdk.Coin{
 		sdk.NewInt64Coin("uatom", 6000000),
 		sdk.NewInt64Coin("uosmo", 12000000),
 	}
-	// 20 star to 1 osmo
+	// 2 star to 1 osmo
 	atomPool := preparePool(t, ctx, osmosis, actor, pool2Funds)
 
 	reflect := instantiateReflectContract(t, ctx, osmosis, actor)
@@ -183,7 +183,7 @@ func TestQueryEstimateSwap(t *testing.T) {
 		sdk.NewInt64Coin("uosmo", 12000000),
 		sdk.NewInt64Coin("ustar", 240000000),
 	}
-	// 20 star to 1 osmo
+	// 2 star to 1 osmo
 	starPool := preparePool(t, ctx, osmosis, actor, poolFunds)
 
 	reflect := instantiateReflectContract(t, ctx, osmosis, actor)
@@ -299,7 +299,7 @@ func assertValidShares(t *testing.T, shares wasmvmtypes.Coin, poolID uint64) {
 
 func storeReflectCode(t *testing.T, ctx sdk.Context, osmosis *app.OsmosisApp, addr sdk.AccAddress) {
 	govKeeper := osmosis.GovKeeper
-	wasmCode, err := ioutil.ReadFile("../testdata/osmo_reflect.wasm")
+	wasmCode, err := os.ReadFile("../testdata/osmo_reflect.wasm")
 	require.NoError(t, err)
 
 	src := wasmtypes.StoreCodeProposalFixture(func(p *wasmtypes.StoreCodeProposal) {
@@ -308,7 +308,7 @@ func storeReflectCode(t *testing.T, ctx sdk.Context, osmosis *app.OsmosisApp, ad
 	})
 
 	// when stored
-	storedProposal, err := govKeeper.SubmitProposal(ctx, src)
+	storedProposal, err := govKeeper.SubmitProposal(ctx, src, false)
 	require.NoError(t, err)
 
 	// and proposal execute

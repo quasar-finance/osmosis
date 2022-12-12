@@ -1,3 +1,13 @@
+/*
+The `pool-incentives` module automatically creates individual gauges
+in the `incentives` module for every lock duration
+that exists in that pool. The `pool-incentives` module also takes
+the `pool_incentives` distributed from the `gov` module
+and distributes it to the various incentivized gauges.
+  - Handles governance proposals impacting pool incentives.
+  - Pool distribution and lockup infos queries.
+  - Distributes incentives to LPs.
+*/
 package pool_incentives
 
 import (
@@ -19,9 +29,9 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/gov/simulation"
 
-	"github.com/osmosis-labs/osmosis/v7/x/pool-incentives/client/cli"
-	"github.com/osmosis-labs/osmosis/v7/x/pool-incentives/keeper"
-	"github.com/osmosis-labs/osmosis/v7/x/pool-incentives/types"
+	"github.com/osmosis-labs/osmosis/v13/x/pool-incentives/client/cli"
+	"github.com/osmosis-labs/osmosis/v13/x/pool-incentives/keeper"
+	"github.com/osmosis-labs/osmosis/v13/x/pool-incentives/types"
 )
 
 var (
@@ -30,9 +40,7 @@ var (
 	_ module.AppModuleSimulation = AppModule{}
 )
 
-type AppModuleBasic struct {
-	cdc codec.Codec
-}
+type AppModuleBasic struct{}
 
 // Name returns the pool-incentives module's name.
 func (AppModuleBasic) Name() string { return types.ModuleName }
@@ -58,7 +66,7 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return types.ValidateGenesis(&data)
 }
 
-//---------------------------------------
+// ---------------------------------------
 // Interfaces.
 func (b AppModuleBasic) RegisterRESTRoutes(ctx client.Context, r *mux.Router) {
 	// noop
@@ -71,7 +79,7 @@ func (b AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux 
 }
 
 func (b AppModuleBasic) GetTxCmd() *cobra.Command {
-	return cli.NewTxCmd()
+	return nil
 }
 
 func (b AppModuleBasic) GetQueryCmd() *cobra.Command {
@@ -93,9 +101,9 @@ func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQuerier(am.keeper))
 }
 
-func NewAppModule(cdc codec.Codec, keeper keeper.Keeper) AppModule {
+func NewAppModule(keeper keeper.Keeper) AppModule {
 	return AppModule{
-		AppModuleBasic: AppModuleBasic{cdc: cdc},
+		AppModuleBasic: AppModuleBasic{},
 		keeper:         keeper,
 	}
 }

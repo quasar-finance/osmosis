@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/superfluid/types"
+	"github.com/osmosis-labs/osmosis/v13/x/superfluid/types"
 )
 
 func (suite *KeeperTestSuite) TestIntermediaryAccountCreation() {
@@ -23,6 +23,19 @@ func (suite *KeeperTestSuite) TestIntermediaryAccountCreation() {
 		{
 			"test multiple intermediary accounts with multiple superfluid delegation",
 			[]stakingtypes.BondStatus{stakingtypes.Bonded, stakingtypes.Bonded},
+			2,
+			[]superfluidDelegation{{0, 0, 0, 1000000}, {1, 1, 0, 1000000}},
+		},
+		// Can create intermediary account with unbonded, unbonding validators
+		{
+			"test intermediary account with unbonded validator",
+			[]stakingtypes.BondStatus{stakingtypes.Bonded, stakingtypes.Unbonded},
+			2,
+			[]superfluidDelegation{{0, 0, 0, 1000000}, {1, 1, 0, 1000000}},
+		},
+		{
+			"test intermediary account with unbonding validator",
+			[]stakingtypes.BondStatus{stakingtypes.Bonded, stakingtypes.Unbonding},
 			2,
 			[]superfluidDelegation{{0, 0, 0, 1000000}, {1, 1, 0, 1000000}},
 		},
@@ -52,7 +65,7 @@ func (suite *KeeperTestSuite) TestIntermediaryAccountCreation() {
 				suite.Require().Equal(uint64(0), interAcc.GaugeId)
 				suite.Require().Equal("", interAcc.ValAddr)
 
-				lock := suite.SetupSuperfluidDelegate(delAddr, valAddr, denom, superDelegation.lpAmount)
+				lock := suite.setupSuperfluidDelegate(delAddr, valAddr, denom, superDelegation.lpAmount)
 
 				// check that intermediary Account connection is established
 				interAccConnection := suite.App.SuperfluidKeeper.GetLockIdIntermediaryAccountConnection(suite.Ctx, lock.ID)

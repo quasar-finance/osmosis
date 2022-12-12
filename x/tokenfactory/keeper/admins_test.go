@@ -4,13 +4,16 @@ import (
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/tokenfactory/types"
+	"github.com/osmosis-labs/osmosis/v13/x/tokenfactory/types"
 )
 
 func (suite *KeeperTestSuite) TestAdminMsgs() {
 	addr0bal := int64(0)
 	addr1bal := int64(0)
+
+	bankKeeper := suite.App.BankKeeper
 
 	suite.CreateDefaultDenom()
 	// Make sure that the admin is set correctly
@@ -24,19 +27,19 @@ func (suite *KeeperTestSuite) TestAdminMsgs() {
 	_, err = suite.msgServer.Mint(sdk.WrapSDKContext(suite.Ctx), types.NewMsgMint(suite.TestAccs[0].String(), sdk.NewInt64Coin(suite.defaultDenom, 10)))
 	addr0bal += 10
 	suite.Require().NoError(err)
-	suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
+	suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
 
 	// // Test force transferring
 	// _, err = suite.msgServer.ForceTransfer(sdk.WrapSDKContext(suite.Ctx), types.NewMsgForceTransfer(suite.TestAccs[0].String(), sdk.NewInt64Coin(denom, 5), suite.TestAccs[1].String(), suite.TestAccs[0].String()))
 	// suite.Require().NoError(err)
-	// suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], denom).IsEqual(sdk.NewInt64Coin(denom, 15)))
-	// suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], denom).IsEqual(sdk.NewInt64Coin(denom, 5)))
+	// suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], denom).IsEqual(sdk.NewInt64Coin(denom, 15)))
+	// suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], denom).IsEqual(sdk.NewInt64Coin(denom, 5)))
 
 	// Test burning from own account
 	_, err = suite.msgServer.Burn(sdk.WrapSDKContext(suite.Ctx), types.NewMsgBurn(suite.TestAccs[0].String(), sdk.NewInt64Coin(suite.defaultDenom, 5)))
 	addr0bal -= 5
 	suite.Require().NoError(err)
-	suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], suite.defaultDenom).Amount.Int64() == addr1bal)
+	suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], suite.defaultDenom).Amount.Int64() == addr1bal)
 
 	// Test Change Admin
 	_, err = suite.msgServer.ChangeAdmin(sdk.WrapSDKContext(suite.Ctx), types.NewMsgChangeAdmin(suite.TestAccs[0].String(), suite.defaultDenom, suite.TestAccs[1].String()))
@@ -54,7 +57,7 @@ func (suite *KeeperTestSuite) TestAdminMsgs() {
 	_, err = suite.msgServer.Mint(sdk.WrapSDKContext(suite.Ctx), types.NewMsgMint(suite.TestAccs[1].String(), sdk.NewInt64Coin(suite.defaultDenom, 5)))
 	addr1bal += 5
 	suite.Require().NoError(err)
-	suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], suite.defaultDenom).Amount.Int64() == addr1bal)
+	suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[1], suite.defaultDenom).Amount.Int64() == addr1bal)
 
 	// Try setting admin to empty
 	_, err = suite.msgServer.ChangeAdmin(sdk.WrapSDKContext(suite.Ctx), types.NewMsgChangeAdmin(suite.TestAccs[1].String(), suite.defaultDenom, ""))
@@ -71,9 +74,7 @@ func (suite *KeeperTestSuite) TestAdminMsgs() {
 // * Only the admin of a denom can mint tokens for it
 // * The admin of a denom can mint tokens for it
 func (suite *KeeperTestSuite) TestMintDenom() {
-	var (
-		addr0bal = int64(0)
-	)
+	var addr0bal int64
 
 	// Create a denom
 	suite.CreateDefaultDenom()
@@ -109,11 +110,12 @@ func (suite *KeeperTestSuite) TestMintDenom() {
 	} {
 		suite.Run(fmt.Sprintf("Case %s", tc.desc), func() {
 			// Test minting to admins own account
+			bankKeeper := suite.App.BankKeeper
 			_, err := suite.msgServer.Mint(sdk.WrapSDKContext(suite.Ctx), types.NewMsgMint(tc.admin, sdk.NewInt64Coin(tc.mintDenom, 10)))
 			if tc.valid {
 				addr0bal += 10
 				suite.Require().NoError(err)
-				suite.Require().Equal(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64(), addr0bal, suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
+				suite.Require().Equal(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64(), addr0bal, bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
 			} else {
 				suite.Require().Error(err)
 			}
@@ -122,9 +124,7 @@ func (suite *KeeperTestSuite) TestMintDenom() {
 }
 
 func (suite *KeeperTestSuite) TestBurnDenom() {
-	var (
-		addr0bal = int64(0)
-	)
+	var addr0bal int64
 
 	// Create a denom.
 	suite.CreateDefaultDenom()
@@ -171,14 +171,15 @@ func (suite *KeeperTestSuite) TestBurnDenom() {
 	} {
 		suite.Run(fmt.Sprintf("Case %s", tc.desc), func() {
 			// Test minting to admins own account
+			bankKeeper := suite.App.BankKeeper
 			_, err := suite.msgServer.Burn(sdk.WrapSDKContext(suite.Ctx), types.NewMsgBurn(tc.admin, sdk.NewInt64Coin(tc.burnDenom, 10)))
 			if tc.valid {
 				addr0bal -= 10
 				suite.Require().NoError(err)
-				suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
+				suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
 			} else {
 				suite.Require().Error(err)
-				suite.Require().True(suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, suite.App.BankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
+				suite.Require().True(bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom).Amount.Int64() == addr0bal, bankKeeper.GetBalance(suite.Ctx, suite.TestAccs[0], suite.defaultDenom))
 			}
 		})
 	}
@@ -267,6 +268,135 @@ func (suite *KeeperTestSuite) TestChangeAdminDenom() {
 				} else {
 					suite.Require().Error(err)
 				}
+			}
+		})
+	}
+}
+
+func (suite *KeeperTestSuite) TestSetDenomMetaData() {
+	// setup test
+	suite.SetupTest()
+	suite.CreateDefaultDenom()
+
+	for _, tc := range []struct {
+		desc                string
+		msgSetDenomMetadata types.MsgSetDenomMetadata
+		expectedPass        bool
+	}{
+		{
+			desc: "successful set denom metadata",
+			msgSetDenomMetadata: *types.NewMsgSetDenomMetadata(suite.TestAccs[0].String(), banktypes.Metadata{
+				Description: "yeehaw",
+				DenomUnits: []*banktypes.DenomUnit{
+					{
+						Denom:    suite.defaultDenom,
+						Exponent: 0,
+					},
+					{
+						Denom:    "uosmo",
+						Exponent: 6,
+					},
+				},
+				Base:    suite.defaultDenom,
+				Display: "uosmo",
+				Name:    "OSMO",
+				Symbol:  "OSMO",
+			}),
+			expectedPass: true,
+		},
+		{
+			desc: "non existent factory denom name",
+			msgSetDenomMetadata: *types.NewMsgSetDenomMetadata(suite.TestAccs[0].String(), banktypes.Metadata{
+				Description: "yeehaw",
+				DenomUnits: []*banktypes.DenomUnit{
+					{
+						Denom:    fmt.Sprintf("factory/%s/litecoin", suite.TestAccs[0].String()),
+						Exponent: 0,
+					},
+					{
+						Denom:    "uosmo",
+						Exponent: 6,
+					},
+				},
+				Base:    fmt.Sprintf("factory/%s/litecoin", suite.TestAccs[0].String()),
+				Display: "uosmo",
+				Name:    "OSMO",
+				Symbol:  "OSMO",
+			}),
+			expectedPass: false,
+		},
+		{
+			desc: "non-factory denom",
+			msgSetDenomMetadata: *types.NewMsgSetDenomMetadata(suite.TestAccs[0].String(), banktypes.Metadata{
+				Description: "yeehaw",
+				DenomUnits: []*banktypes.DenomUnit{
+					{
+						Denom:    "uosmo",
+						Exponent: 0,
+					},
+					{
+						Denom:    "uosmoo",
+						Exponent: 6,
+					},
+				},
+				Base:    "uosmo",
+				Display: "uosmoo",
+				Name:    "OSMO",
+				Symbol:  "OSMO",
+			}),
+			expectedPass: false,
+		},
+		{
+			desc: "wrong admin",
+			msgSetDenomMetadata: *types.NewMsgSetDenomMetadata(suite.TestAccs[1].String(), banktypes.Metadata{
+				Description: "yeehaw",
+				DenomUnits: []*banktypes.DenomUnit{
+					{
+						Denom:    suite.defaultDenom,
+						Exponent: 0,
+					},
+					{
+						Denom:    "uosmo",
+						Exponent: 6,
+					},
+				},
+				Base:    suite.defaultDenom,
+				Display: "uosmo",
+				Name:    "OSMO",
+				Symbol:  "OSMO",
+			}),
+			expectedPass: false,
+		},
+		{
+			desc: "invalid metadata (missing display denom unit)",
+			msgSetDenomMetadata: *types.NewMsgSetDenomMetadata(suite.TestAccs[0].String(), banktypes.Metadata{
+				Description: "yeehaw",
+				DenomUnits: []*banktypes.DenomUnit{
+					{
+						Denom:    suite.defaultDenom,
+						Exponent: 0,
+					},
+				},
+				Base:    suite.defaultDenom,
+				Display: "uosmo",
+				Name:    "OSMO",
+				Symbol:  "OSMO",
+			}),
+			expectedPass: false,
+		},
+	} {
+		suite.Run(fmt.Sprintf("Case %s", tc.desc), func() {
+			bankKeeper := suite.App.BankKeeper
+			res, err := suite.msgServer.SetDenomMetadata(sdk.WrapSDKContext(suite.Ctx), &tc.msgSetDenomMetadata)
+			if tc.expectedPass {
+				suite.Require().NoError(err)
+				suite.Require().NotNil(res)
+
+				md, found := bankKeeper.GetDenomMetaData(suite.Ctx, suite.defaultDenom)
+				suite.Require().True(found)
+				suite.Require().Equal(tc.msgSetDenomMetadata.Metadata.Name, md.Name)
+			} else {
+				suite.Require().Error(err)
 			}
 		})
 	}

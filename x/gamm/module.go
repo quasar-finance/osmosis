@@ -1,3 +1,12 @@
+/*
+Package gamm contains a variety of generalized automated market maker
+functionality which provides the logic to create and interact with
+liquidity pools on the Osmosis DEX.
+ - Has pool creation, join pool, and exit pool logic
+ - Token swap logic
+ - GAMM pool queries
+*/
+
 package gamm
 
 import (
@@ -15,12 +24,15 @@ import (
 	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/client/cli"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/keeper"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/pool-models/balancer"
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/simulation/simtypes"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/client/cli"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/keeper"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/balancer"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/pool-models/stableswap"
+	simulation "github.com/osmosis-labs/osmosis/v13/x/gamm/simulation"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/v2types"
 )
 
 var (
@@ -39,7 +51,7 @@ func (AppModuleBasic) Name() string { return types.ModuleName }
 func (AppModuleBasic) RegisterLegacyAminoCodec(cdc *codec.LegacyAmino) {
 	types.RegisterLegacyAminoCodec(cdc)
 	balancer.RegisterLegacyAminoCodec(cdc)
-	// stableswap.RegisterLegacyAminoCodec(cdc)
+	stableswap.RegisterLegacyAminoCodec(cdc)
 }
 
 // DefaultGenesis returns default genesis state as raw bytes for the gamm
@@ -57,13 +69,14 @@ func (AppModuleBasic) ValidateGenesis(cdc codec.JSONCodec, config client.TxEncod
 	return genState.Validate()
 }
 
-//---------------------------------------
+// ---------------------------------------
 // Interfaces.
 func (b AppModuleBasic) RegisterRESTRoutes(ctx client.Context, r *mux.Router) {
 }
 
 func (b AppModuleBasic) RegisterGRPCGatewayRoutes(clientCtx client.Context, mux *runtime.ServeMux) {
-	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx)) //nolint:errcheck
+	types.RegisterQueryHandlerClient(context.Background(), mux, types.NewQueryClient(clientCtx))     //nolint:errcheck
+	v2types.RegisterQueryHandlerClient(context.Background(), mux, v2types.NewQueryClient(clientCtx)) //nolint:errcheck
 }
 
 func (b AppModuleBasic) GetTxCmd() *cobra.Command {
@@ -78,7 +91,7 @@ func (b AppModuleBasic) GetQueryCmd() *cobra.Command {
 func (AppModuleBasic) RegisterInterfaces(registry codectypes.InterfaceRegistry) {
 	types.RegisterInterfaces(registry)
 	balancer.RegisterInterfaces(registry)
-	// stableswap.RegisterInterfaces(registry)
+	stableswap.RegisterInterfaces(registry)
 }
 
 type AppModule struct {
@@ -87,16 +100,14 @@ type AppModule struct {
 	ak     types.AccountKeeper
 	bk     types.BankKeeper
 	keeper keeper.Keeper
-
-	accountKeeper stakingtypes.AccountKeeper
-	bankKeeper    stakingtypes.BankKeeper
 }
 
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(&am.keeper))
 	balancer.RegisterMsgServer(cfg.MsgServer(), keeper.NewBalancerMsgServerImpl(&am.keeper))
-	// stableswap.RegisterMsgServer(cfg.MsgServer(), keeper.NewStableswapMsgServerImpl(&am.keeper))
+	stableswap.RegisterMsgServer(cfg.MsgServer(), keeper.NewStableswapMsgServerImpl(&am.keeper))
 	types.RegisterQueryServer(cfg.QueryServer(), keeper.NewQuerier(am.keeper))
+	v2types.RegisterQueryServer(cfg.QueryServer(), keeper.NewV2Querier(am.keeper))
 }
 
 func NewAppModule(cdc codec.Codec, keeper keeper.Keeper,
@@ -117,7 +128,7 @@ func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {
 
 // Route returns the message routing key for the gamm module.
 func (am AppModule) Route() sdk.Route {
-	return sdk.NewRoute(types.RouterKey, NewHandler(&am.keeper))
+	return sdk.Route{}
 }
 
 // QuerierRoute returns the gamm module's querier route name.
@@ -158,3 +169,17 @@ func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.Val
 
 // ConsensusVersion implements AppModule/ConsensusVersion.
 func (AppModule) ConsensusVersion() uint64 { return 1 }
+
+// **** simulation implementation ****
+// GenerateGenesisState creates a randomized GenState of the gamm module.
+func (am AppModule) SimulatorGenesisState(simState *module.SimulationState, s *simtypes.SimCtx) {
+	DefaultGen := types.DefaultGenesis()
+	// change the pool creation fee denom from uosmo to stake
+	DefaultGen.Params.PoolCreationFee = sdk.NewCoins(simulation.PoolCreationFee)
+	DefaultGenJson := simState.Cdc.MustMarshalJSON(DefaultGen)
+	simState.GenState[types.ModuleName] = DefaultGenJson
+}
+
+func (am AppModule) Actions() []simtypes.Action {
+	return simulation.DefaultActions(am.keeper)
+}

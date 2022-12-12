@@ -5,6 +5,7 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/msgservice"
+	authzcodec "github.com/cosmos/cosmos-sdk/x/authz/codec"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
@@ -14,6 +15,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgLockAndSuperfluidDelegate{}, "osmosis/lock-and-superfluid-delegate", nil)
 	cdc.RegisterConcrete(&MsgSuperfluidUnbondLock{}, "osmosis/superfluid-unbond-lock", nil)
 	cdc.RegisterConcrete(&SetSuperfluidAssetsProposal{}, "osmosis/set-superfluid-assets-proposal", nil)
+	cdc.RegisterConcrete(&UpdateUnpoolWhiteListProposal{}, "osmosis/update-unpool-whitelist", nil)
 	cdc.RegisterConcrete(&RemoveSuperfluidAssetsProposal{}, "osmosis/del-superfluid-assets-proposal", nil)
 	cdc.RegisterConcrete(&MsgUnPoolWhitelistedPool{}, "osmosis/unpool-whitelisted-pool", nil)
 }
@@ -32,6 +34,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		(*govtypes.Content)(nil),
 		&SetSuperfluidAssetsProposal{},
 		&RemoveSuperfluidAssetsProposal{},
+		&UpdateUnpoolWhiteListProposal{},
 	)
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
@@ -44,5 +47,10 @@ var (
 
 func init() {
 	RegisterCodec(amino)
+	sdk.RegisterLegacyAminoCodec(amino)
+
+	// Register all Amino interfaces and concrete types on the authz Amino codec so that this can later be
+	// used to properly serialize MsgGrant and MsgExec instances
+	RegisterCodec(authzcodec.Amino)
 	amino.Seal()
 }

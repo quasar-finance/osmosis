@@ -4,7 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/osmosis-labs/osmosis/v7/x/gamm/types"
+	"github.com/osmosis-labs/osmosis/v13/x/gamm/types"
+	swaproutertypes "github.com/osmosis-labs/osmosis/v13/x/swaprouter/types"
 )
 
 const (
@@ -13,20 +14,22 @@ const (
 )
 
 var (
-	_ sdk.Msg             = &MsgCreateStableswapPool{}
-	_ types.CreatePoolMsg = &MsgCreateStableswapPool{}
+	_ sdk.Msg                       = &MsgCreateStableswapPool{}
+	_ swaproutertypes.CreatePoolMsg = &MsgCreateStableswapPool{}
 )
 
 func NewMsgCreateStableswapPool(
 	sender sdk.AccAddress,
 	poolParams PoolParams,
 	initialLiquidity sdk.Coins,
+	scalingFactors []uint64,
 	futurePoolGovernor string,
 ) MsgCreateStableswapPool {
 	return MsgCreateStableswapPool{
 		Sender:               sender.String(),
 		PoolParams:           &poolParams,
 		InitialPoolLiquidity: initialLiquidity,
+		ScalingFactors:       scalingFactors,
 		FuturePoolGovernor:   futurePoolGovernor,
 	}
 }
@@ -44,15 +47,31 @@ func (msg MsgCreateStableswapPool) ValidateBasic() error {
 		return err
 	}
 
-	// validation for pool initial liquidity
-	// TO DO: expand this check to accommodate multi-asset pools for stableswap
-	if len(msg.InitialPoolLiquidity) < 2 {
-		return types.ErrTooFewPoolAssets
-	} else if len(msg.InitialPoolLiquidity) > 2 {
-		return types.ErrTooManyPoolAssets
+	// validation for scaling factors
+	scalingFactors := msg.ScalingFactors
+	// The message's scaling factors must be empty or a valid set of scaling factors
+	if len(scalingFactors) != 0 {
+		if err = validateScalingFactors(scalingFactors, len(msg.InitialPoolLiquidity)); err != nil {
+			return err
+		}
+	} else {
+		for i := 0; i < len(msg.InitialPoolLiquidity); i += 1 {
+			scalingFactors = append(scalingFactors, 1)
+		}
 	}
 
-	// validation for future owner
+	// validation for pool initial liquidity
+	// The message's pool liquidity must have between 2 and 8 assets with at most 10B post-scaled units in each
+	if err = validatePoolLiquidity(msg.InitialPoolLiquidity, scalingFactors); err != nil {
+		return err
+	}
+
+	// validation for scaling factor owner
+	if err = validateScalingFactorController(msg.ScalingFactorController); err != nil {
+		return err
+	}
+
+	// validation for future governor
 	if err = types.ValidateFutureGovernor(msg.FuturePoolGovernor); err != nil {
 		return err
 	}
@@ -90,13 +109,18 @@ func (msg MsgCreateStableswapPool) InitialLiquidity() sdk.Coins {
 	return msg.InitialPoolLiquidity
 }
 
-func (msg MsgCreateStableswapPool) CreatePool(ctx sdk.Context, poolId uint64) (types.PoolI, error) {
-	stableswapPool, err := NewStableswapPool(poolId, *msg.PoolParams, msg.InitialPoolLiquidity, msg.FuturePoolGovernor, ctx.BlockTime())
+func (msg MsgCreateStableswapPool) CreatePool(ctx sdk.Context, poolId uint64) (swaproutertypes.PoolI, error) {
+	stableswapPool, err := NewStableswapPool(poolId, *msg.PoolParams, msg.InitialPoolLiquidity,
+		msg.ScalingFactors, msg.ScalingFactorController, msg.FuturePoolGovernor)
 	if err != nil {
 		return nil, err
 	}
 
 	return &stableswapPool, nil
+}
+
+func (msg MsgCreateStableswapPool) GetPoolType() swaproutertypes.PoolType {
+	return swaproutertypes.StableSwap
 }
 
 var _ sdk.Msg = &MsgStableSwapAdjustScalingFactors{}
@@ -105,10 +129,12 @@ var _ sdk.Msg = &MsgStableSwapAdjustScalingFactors{}
 func NewMsgStableSwapAdjustScalingFactors(
 	sender string,
 	poolID uint64,
+	scalingFactors []uint64,
 ) MsgStableSwapAdjustScalingFactors {
 	return MsgStableSwapAdjustScalingFactors{
-		Sender: sender,
-		PoolID: poolID,
+		Sender:         sender,
+		PoolID:         poolID,
+		ScalingFactors: scalingFactors,
 	}
 }
 

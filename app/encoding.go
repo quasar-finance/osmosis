@@ -1,12 +1,20 @@
 package app
 
 import (
-	"github.com/osmosis-labs/osmosis/v7/app/params"
+	"github.com/osmosis-labs/osmosis/v13/app/params"
 
 	"github.com/cosmos/cosmos-sdk/std"
 )
 
-// MakeEncodingConfig creates an EncodingConfig for testing.
+var (
+	encodingConfig params.EncodingConfig = MakeEncodingConfig()
+)
+
+func GetEncodingConfig() params.EncodingConfig {
+	return encodingConfig
+}
+
+// MakeEncodingConfig creates an EncodingConfig.
 func MakeEncodingConfig() params.EncodingConfig {
 	encodingConfig := params.MakeEncodingConfig()
 	std.RegisterLegacyAminoCodec(encodingConfig.Amino)

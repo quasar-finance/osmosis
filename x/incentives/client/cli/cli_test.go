@@ -1,368 +1,96 @@
-package cli_test
+package cli
 
 import (
-	"fmt"
+	"testing"
 
-	"github.com/gogo/protobuf/proto"
-	"github.com/stretchr/testify/suite"
+	"github.com/cosmos/cosmos-sdk/types/query"
 
-	"github.com/osmosis-labs/osmosis/v7/app"
-	"github.com/osmosis-labs/osmosis/v7/x/incentives/client/cli"
-	"github.com/osmosis-labs/osmosis/v7/x/incentives/types"
-
-	clitestutil "github.com/cosmos/cosmos-sdk/testutil/cli"
-	"github.com/cosmos/cosmos-sdk/testutil/network"
+	"github.com/osmosis-labs/osmosis/v13/osmoutils"
+	"github.com/osmosis-labs/osmosis/v13/osmoutils/osmocli"
+	"github.com/osmosis-labs/osmosis/v13/x/incentives/types"
 )
 
-type IntegrationTestSuite struct {
-	suite.Suite
+var testAddresses = osmoutils.CreateRandomAccounts(3)
 
-	cfg     network.Config
-	network *network.Network
-}
-
-func (s *IntegrationTestSuite) SetupSuite() {
-	s.T().Log("setting up integration test suite")
-
-	s.cfg = app.DefaultConfig()
-
-	s.network = network.New(s.T(), s.cfg)
-
-	_, err := s.network.WaitForHeight(1)
-	s.Require().NoError(err)
-}
-
-func (s *IntegrationTestSuite) TearDownSuite() {
-	s.T().Log("tearing down integration test suite")
-	s.network.Cleanup()
-}
-
-func (s *IntegrationTestSuite) TestGetCmdGauges() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query gauges",
-			false, &types.GaugesResponse{},
+func TestGetCmdGauges(t *testing.T) {
+	desc, _ := GetCmdGauges()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.GaugesRequest]{
+		"basic test": {
+			Cmd: "--offset=2",
+			ExpectedQuery: &types.GaugesRequest{
+				Pagination: &query.PageRequest{Key: []uint8{}, Offset: 2, Limit: 100},
+			},
 		},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdGauges()
-			clientCtx := val.ClientCtx
-
-			args := []string{}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdToDistributeCoins() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query to distribute coins",
-			false, &types.ModuleToDistributeCoinsResponse{},
+func TestGetCmdToDistributeCoins(t *testing.T) {
+	desc, _ := GetCmdToDistributeCoins()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.ModuleToDistributeCoinsRequest]{
+		"basic test": {
+			Cmd: "", ExpectedQuery: &types.ModuleToDistributeCoinsRequest{},
 		},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdToDistributeCoins()
-			clientCtx := val.ClientCtx
-
-			args := []string{}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdDistributedCoins() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query to distribute coins",
-			false, &types.ModuleDistributedCoinsResponse{},
+func TestGetCmdGaugeByID(t *testing.T) {
+	desc, _ := GetCmdGaugeByID()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.GaugeByIDRequest]{
+		"basic test": {
+			Cmd: "1", ExpectedQuery: &types.GaugeByIDRequest{Id: 1},
 		},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdDistributedCoins()
-			clientCtx := val.ClientCtx
-
-			args := []string{}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdGaugeByID() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query gauge by id",
-			false, &types.GaugeByIDResponse{},
-		},
+func TestGetCmdActiveGauges(t *testing.T) {
+	desc, _ := GetCmdActiveGauges()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.ActiveGaugesRequest]{
+		"basic test": {
+			Cmd: "--offset=2",
+			ExpectedQuery: &types.ActiveGaugesRequest{
+				Pagination: &query.PageRequest{Key: []uint8{}, Offset: 2, Limit: 100},
+			}},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdGaugeByID()
-			clientCtx := val.ClientCtx
-
-			args := []string{"1"}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdActiveGauges() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query active gauges",
-			false, &types.ActiveGaugesResponse{},
-		},
+func TestGetCmdActiveGaugesPerDenom(t *testing.T) {
+	desc, _ := GetCmdActiveGaugesPerDenom()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.ActiveGaugesPerDenomRequest]{
+		"basic test": {
+			Cmd: "uosmo --offset=2",
+			ExpectedQuery: &types.ActiveGaugesPerDenomRequest{
+				Denom:      "uosmo",
+				Pagination: &query.PageRequest{Key: []uint8{}, Offset: 2, Limit: 100},
+			}},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdActiveGauges()
-			clientCtx := val.ClientCtx
-
-			args := []string{}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdActiveGaugesPerDenom() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query active gauges per denom",
-			false, &types.ActiveGaugesPerDenomResponse{},
-		},
+func TestGetCmdUpcomingGauges(t *testing.T) {
+	desc, _ := GetCmdUpcomingGauges()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.UpcomingGaugesRequest]{
+		"basic test": {
+			Cmd: "--offset=2",
+			ExpectedQuery: &types.UpcomingGaugesRequest{
+				Pagination: &query.PageRequest{Key: []uint8{}, Offset: 2, Limit: 100},
+			}},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdActiveGaugesPerDenom()
-			clientCtx := val.ClientCtx
-
-			args := []string{s.cfg.BondDenom}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
 
-func (s *IntegrationTestSuite) TestGetCmdUpcomingGauges() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query upcoming gauges",
-			false, &types.UpcomingGaugesResponse{},
-		},
+func TestGetCmdUpcomingGaugesPerDenom(t *testing.T) {
+	desc, _ := GetCmdUpcomingGaugesPerDenom()
+	tcs := map[string]osmocli.QueryCliTestCase[*types.UpcomingGaugesPerDenomRequest]{
+		"basic test": {
+			Cmd: "uosmo --offset=2",
+			ExpectedQuery: &types.UpcomingGaugesPerDenomRequest{
+				Denom:      "uosmo",
+				Pagination: &query.PageRequest{Key: []uint8{}, Offset: 2, Limit: 100},
+			}},
 	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdUpcomingGauges()
-			clientCtx := val.ClientCtx
-
-			args := []string{}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetCmdUpcomingGaugesPerDenom() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query upcoming gauges per denom",
-			false, &types.UpcomingGaugesPerDenomResponse{},
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdUpcomingGaugesPerDenom()
-			clientCtx := val.ClientCtx
-
-			args := []string{s.cfg.BondDenom}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
-}
-
-func (s *IntegrationTestSuite) TestGetCmdRewardsEst() {
-	val := s.network.Validators[0]
-
-	testCases := []struct {
-		name      string
-		owner     string
-		lockIds   string
-		endEpoch  int64
-		expectErr bool
-		respType  proto.Message
-	}{
-		{
-			"query rewards estimation by owner",
-			val.Address.String(),
-			"",
-			100,
-			false, &types.RewardsEstResponse{},
-		},
-		{
-			"query rewards estimation by lock id",
-			"",
-			"1,2",
-			100,
-			false, &types.RewardsEstResponse{},
-		},
-		{
-			"query rewards estimation with empty end epoch",
-			"",
-			"1,2",
-			0,
-			false, &types.RewardsEstResponse{},
-		},
-	}
-
-	for _, tc := range testCases {
-		tc := tc
-
-		s.Run(tc.name, func() {
-			cmd := cli.GetCmdRewardsEst()
-			clientCtx := val.ClientCtx
-
-			args := []string{
-				fmt.Sprintf("--%s=%s", cli.FlagOwner, tc.owner),
-				fmt.Sprintf("--%s=%s", cli.FlagLockIds, tc.lockIds),
-				fmt.Sprintf("--%s=%d", cli.FlagEndEpoch, tc.endEpoch),
-			}
-
-			out, err := clitestutil.ExecTestCLICmd(clientCtx, cmd, args)
-			if tc.expectErr {
-				s.Require().Error(err)
-			} else {
-				s.Require().NoError(err, out.String())
-				s.Require().NoError(clientCtx.Codec.UnmarshalJSON(out.Bytes(), tc.respType), out.String())
-			}
-		})
-	}
+	osmocli.RunQueryTestCases(t, desc, tcs)
 }
